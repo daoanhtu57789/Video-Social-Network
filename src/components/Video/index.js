@@ -10,8 +10,12 @@ import {
   Typography,
   CardActions,
   IconButton,
-  Grid
+  Grid,
+  Fab
 } from "@material-ui/core";
+
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 
@@ -62,6 +66,27 @@ class Video extends Component {
           <IconButton aria-label="share">
             <ShareIcon /> 7
           </IconButton>
+          <Fab
+            color="primary"
+            aria-label="edit"
+            size="small"
+            className={classes.fab}
+            // onClick={() => onClickEdit(task)}
+          >
+            <EditIcon fontSize="small" />
+          </Fab>
+          <Fab
+            color="secondary"
+            aria-label="delete"
+            size="small"
+            className={classes.fab}
+          >
+            <DeleteIcon
+              fontSize="small"
+              //khi click vào button thì sẽ gọi hàm onClickDelete mà ở TaskList truyền vào
+              // onClick={() => onClickDelete(task)}
+            />
+          </Fab>
         </CardActions>
       </Card>
     );

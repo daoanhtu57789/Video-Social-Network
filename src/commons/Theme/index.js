@@ -8,7 +8,16 @@ const theme = createMuiTheme({
     textColor: '#FFFFFF',
     defaultTextColor : '#000000',
     hover : 'rgba(0,0,0,0.08)'
-  }
+  },
+  typography: {
+    fontFamily: 'Roboto',
+  },
+  shape: {
+    borderRadius: 4,
+    backgroundColor: '#7B1F32',
+    textColor: '#FFFFFF',
+    borderColor: '#ccc',
+  },
 });
 
 export default theme;

@@ -7,11 +7,16 @@ import { Button, Grid } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import LoopIcon from "@material-ui/icons/Loop";
 //component
-import SearchBox from "./../../components/SearchBox/index";
-import VideoList from "./../../components/VideoList/index";
+import SearchBox from "../../components/SearchBox/index";
+import VideoList from "../../components/VideoList/index";
 //contans
-import { STATUSES } from "./../../contanst/index";
-class TaskBoard extends Component {
+import { STATUSES } from "../../contanst/index";
+//kêt nối với store
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+//actions
+import * as modalActions from "./../../actions/modal";
+class VideoBoard extends Component {
   //Thanh tìm kiếm
   renderSearchBox = () => {
     let xhtml = null;
@@ -23,7 +28,7 @@ class TaskBoard extends Component {
     let xhtml = null;
 
     xhtml = (
-      <Grid container spacing={2} style={{paddingTop:'10px'}}>
+      <Grid container spacing={2} style={{ paddingTop: "10px" }}>
         {STATUSES.map(status => {
           return <VideoList key={status.value} status={status} />;
         })}
@@ -32,8 +37,16 @@ class TaskBoard extends Component {
     return xhtml;
   };
 
+  openForm = () => {
+    const { modalActionsCreator } = this.props;
+    const {showModal} = modalActionsCreator;
+    showModal();
+  };
+  
+
+
   render() {
-    const { classes } = this.props;
+    const { classes} = this.props;
     return (
       <div>
         <Button
@@ -48,7 +61,12 @@ class TaskBoard extends Component {
           Load Video
         </Button>
 
-        <Button variant="contained" color="primary" className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={this.openForm}
+        >
           <AddIcon />
           Up Video
         </Button>
@@ -59,4 +77,13 @@ class TaskBoard extends Component {
   }
 }
 
-export default withStyles(styles)(TaskBoard);
+const mapDispatchToProps = dispatch => {
+  return {
+    modalActionsCreator: bindActionCreators(modalActions, dispatch)
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(withStyles(styles)(VideoBoard));

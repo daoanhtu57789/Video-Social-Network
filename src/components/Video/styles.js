@@ -11,6 +11,9 @@ const styles =(theme) =>({
     },
     iframe : {
         marginLeft:'8px'
+    },
+    fab :{
+        marginLeft:'auto'
     }
 });
 
