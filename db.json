@@ -1,0 +1,36 @@
+{
+    "videos" : [
+        {
+            "id":1,
+            "description" : "video hay",
+            "link" : "https://www.youtube.com/embed/S0vy9ZsI40Y",
+            "status" : 0,
+            "likeCount" : 50,
+            "shareCount" : 2
+        },
+        {
+            "id":2,
+            "description" : "video do anh tu",
+            "link" : "https://www.youtube.com/embed/eajigqym0rM",
+            "status" : 0,
+            "likeCount" : 5,
+            "shareCount" : 2
+        },
+        {
+            "id":3,
+            "description" : "Làm giàu không khó",
+            "link" : "https://www.youtube.com/embed/S0vy9ZsI40Y",
+            "status" : 2,
+            "likeCount" : 10,
+            "shareCount" : 2
+        },
+        {
+            "id":4,
+            "description" : "video hay",
+            "link" : "https://www.youtube.com/embed/eajigqym0rM",
+            "status" : 1,
+            "likeCount" : 100,
+            "shareCount" : 44
+        }
+    ]
+}

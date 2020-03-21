@@ -1,12 +1,12 @@
-import * as modalContanst from './../contanst/modal';
+import * as modalConstants from './../constants/modal';
 export const showModal = () =>{
     return {
-        type : modalContanst.SHOW_MODAL
+        type : modalConstants.SHOW_MODAL
     }
 }
 
 export const hideModal = () =>{
     return {
-        type : modalContanst.HIDE_MODAL
+        type : modalConstants.HIDE_MODAL
     }
 }

@@ -1,4 +1,4 @@
-import * as modalContants from './../contanst/modal';
+import * as modalContants from './../constants/modal';
 
 const initialState = {
     showModal : false,

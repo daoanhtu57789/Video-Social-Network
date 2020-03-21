@@ -6,7 +6,8 @@ import { ThemeProvider } from "@material-ui/core/styles";
 
 //truyền component
 import VideoBoard from "./../VideoBoard/index";
-import CommonModal from './../../components/Modal';
+import CommonModal from './../../components/Modal/index';
+import GlobalLoading from './../../components/GlobalLoading/index'
 //import Provider để kết nối với store
 import { Provider } from 'react-redux';
 //import để reset css
@@ -22,6 +23,7 @@ class App extends Component {
           <CssBaseline/>
           <VideoBoard />
           <CommonModal />
+          <GlobalLoading />
         </ThemeProvider>
       </Provider>
     );

@@ -12,4 +12,6 @@ export const STATUSES = [
         value : 2,
         label : 'WATCHED'
     }
-]
+];
+
+export const API_ENDPOINT = 'http://localhost:3000';

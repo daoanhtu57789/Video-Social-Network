@@ -21,7 +21,7 @@ import ShareIcon from "@material-ui/icons/Share";
 
 class Video extends Component {
   render() {
-    const { status, classes } = this.props;
+    const { status, classes ,video} = this.props;
     return (
       <Card className={classes.root}>
         <CardContent>
@@ -48,7 +48,7 @@ class Video extends Component {
           title="ads"
           width="420"
           height="300"
-          src="https://www.youtube.com/embed/S0vy9ZsI40Y"
+          src={video.link}
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -56,15 +56,15 @@ class Video extends Component {
         ></iframe>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            Đào Anh Tú Fighting
+            {video.description}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
           <IconButton aria-label="add to favorites">
-            <FavoriteIcon /> 25
+            <FavoriteIcon /> {video.likeCount}
           </IconButton>
           <IconButton aria-label="share">
-            <ShareIcon /> 7
+            <ShareIcon /> {video.shareCount}
           </IconButton>
           <Fab
             color="primary"

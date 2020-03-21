@@ -67,7 +67,6 @@ class VideoForm extends Component {
   }
 };
 
-
 const mapDispatchToProps = dispatch => {
   return {
     modalActionsCreator: bindActionCreators(modalActions, dispatch)
