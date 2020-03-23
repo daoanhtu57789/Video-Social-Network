@@ -48,7 +48,7 @@ class Video extends Component {
 
         <iframe
           title="ads"
-          width="420"
+          width="370"
           height="300"
           src={video.link}
           frameBorder="0"
