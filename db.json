@@ -1,36 +1,31 @@
 {
-    "videos" : [
-        {
-            "id":1,
-            "description" : "video hay",
-            "link" : "https://www.youtube.com/embed/S0vy9ZsI40Y",
-            "status" : 0,
-            "likeCount" : 50,
-            "shareCount" : 2
-        },
-        {
-            "id":2,
-            "description" : "video do anh tu",
-            "link" : "https://www.youtube.com/embed/eajigqym0rM",
-            "status" : 0,
-            "likeCount" : 5,
-            "shareCount" : 2
-        },
-        {
-            "id":3,
-            "description" : "Làm giàu không khó",
-            "link" : "https://www.youtube.com/embed/S0vy9ZsI40Y",
-            "status" : 2,
-            "likeCount" : 10,
-            "shareCount" : 2
-        },
-        {
-            "id":4,
-            "description" : "video hay",
-            "link" : "https://www.youtube.com/embed/eajigqym0rM",
-            "status" : 1,
-            "likeCount" : 100,
-            "shareCount" : 44
-        }
-    ]
+  "videos": [
+    {
+      "description": "Nhạc hay lắm",
+      "link": "https://www.youtube.com/embed/_SnJm-IFSW4",
+      "status": 2,
+      "likeCount": 0,
+      "shareCount": 0,
+      "date": "15:9:22 23 thg2 2020",
+      "id": 1
+    },
+    {
+      "description": "asdas",
+      "link": "https://www.youtube.com/embed/_SnJm-IFSW4",
+      "status": 0,
+      "likeCount": 0,
+      "shareCount": 0,
+      "date": "21:57:30 22 thg2 2020",
+      "id": 2
+    },
+    {
+      "description": "daoanhtu",
+      "link": "https://www.youtube.com/embed/_SnJm-IFSW4",
+      "status": 1,
+      "likeCount": 0,
+      "shareCount": 0,
+      "date": "15:9:9 23 thg2 2020",
+      "id": 3
+    }
+  ]
 }

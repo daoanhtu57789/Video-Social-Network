@@ -3,12 +3,13 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "./styles";
 //
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, Box } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import LoopIcon from "@material-ui/icons/Loop";
 //component
 import SearchBox from "../../components/SearchBox/index";
 import VideoList from "../../components/VideoList/index";
+import VideoForm from "./../VideoForm/index";
 //contans
 import { STATUSES } from "../../constants/index";
 //kêt nối với store
@@ -20,6 +21,8 @@ import * as videoActions from "./../../actions/video";
 import * as uiActions from "./../../actions/ui";
 //apis
 import * as apis from "./../../apis/video";
+//thông báo xóa thành công hoặc thất bại
+import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
 class VideoBoard extends Component {
   //lấy dữ liệu khi mở trang
   componentDidMount() {
@@ -33,12 +36,14 @@ class VideoBoard extends Component {
       .getVideos()
       .then(res => {
         fetchVideoSuccess(res.data);
-        hideLoading();
+        setTimeout(hideLoading, 1000);
+        toastSuccess("Lấy dữ liệu thành công =) .");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
-        hideLoading();
+        setTimeout(hideLoading, 1000);
+        toastError("Lấy dữ liệu thất bại :(");
       });
   }
   //Thanh tìm kiếm
@@ -46,6 +51,131 @@ class VideoBoard extends Component {
     let xhtml = null;
     xhtml = <SearchBox />;
     return xhtml;
+  };
+
+  //click button up video
+  openForm = () => {
+    const { modalActionsCreator } = this.props;
+    const {
+      showModal,
+      changeModalContent,
+      changeModalTitle
+    } = modalActionsCreator;
+    showModal();
+    changeModalTitle("Thêm Mới Link Video");
+    changeModalContent(<VideoForm />);
+  };
+
+  //click button load video
+  loadVideo = () => {
+    const { videoActionsCreator, uiActionsCreator } = this.props;
+    const { fetchVideoSuccess, fetchVideoFailed } = videoActionsCreator;
+    const { showLoading, hideLoading } = uiActionsCreator;
+    //showLoading
+    showLoading();
+    //gọi get api
+    apis
+      .getVideos()
+      .then(res => {
+        fetchVideoSuccess(res.data);
+        setTimeout(hideLoading, 1000);
+        toastSuccess("Lấy dữ liệu thành công =) .");
+      })
+      .catch(err => {
+        console.log(err);
+        fetchVideoFailed(err);
+        setTimeout(hideLoading, 1000);
+        toastError("Lấy dữ liệu thất bại :(");
+      });
+  };
+
+  //Hiện Form xác nhận xóa video
+  onClickDelete = video => {
+    const { modalActionsCreator } = this.props;
+    const {
+      hideModal,
+      showModal,
+      changeModalContent,
+      changeModalTitle
+    } = modalActionsCreator;
+    showModal();
+    changeModalTitle("Xóa Video");
+    changeModalContent(
+      <Grid container>
+        <Grid item md={12}>
+          Bạn có chắc muốn xóa <strong>{video.description}</strong> không?
+        </Grid>
+        <Grid item md={12}>
+          {/* flexDirection="row-reverse" Đảo ngược vị trí button ở trong */}
+          <Box display="flex" flexDirection="row-reverse" mt={2}>
+            <Box>
+              <Button ml={2} variant="contained" onClick={hideModal}>
+                Hủy Bỏ
+              </Button>
+            </Box>
+
+            <Button
+              // Nếu nhập đúng theo validate thì sẽ bấm được còn ko thì ẩn nút Lưu Lại
+              // disabled={invalid || submitting}
+
+              variant="contained"
+              color="primary"
+              onClick={() => this.handleDelete(video)}
+            >
+              Đồng Ý
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  //Xóa Video
+  handleDelete = video => {
+    const {
+      videoActionsCreator,
+      uiActionsCreator,
+      modalActionsCreator
+    } = this.props;
+    const { deleteVideoSuccess, deleteVideoFailed } = videoActionsCreator;
+    const { showLoading, hideLoading } = uiActionsCreator;
+    const { hideModal } = modalActionsCreator;
+    //đóng form
+    hideModal();
+    //showLoading
+    showLoading();
+    //gọi get api
+    apis
+      .deleteVideo(video.id)
+      .then(res => {
+        if (res.status === 200) {
+          deleteVideoSuccess(video.id);
+          setTimeout(hideLoading, 1000);
+          toastSuccess("Xóa dữ liệu thành công =) ");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        deleteVideoFailed(err);
+        setTimeout(hideLoading, 1000);
+        toastError("Xóa dữ liệu thất bại :(");
+      });
+  };
+
+  //Edit Video
+  onClickEdit = video => {
+    const { modalActionsCreator, videoActionsCreator } = this.props;
+    const {
+      showModal,
+      changeModalContent,
+      changeModalTitle
+    } = modalActionsCreator;
+    const { setVideoEditing } = videoActionsCreator;
+    //truyền video cần xét vào
+    setVideoEditing(video);
+    showModal();
+    changeModalTitle("Sửa Thông Tin Video");
+    changeModalContent(<VideoForm video={video} />);
   };
   //phần nội dung bên trong
   renderBoard = () => {
@@ -63,38 +193,14 @@ class VideoBoard extends Component {
               key={status.value}
               status={status}
               filterVideoList={filterVideoList}
+              onClickDelete={this.onClickDelete}
+              onClickEdit={this.onClickEdit}
             />
           );
         })}
       </Grid>
     );
     return xhtml;
-  };
-
-  openForm = () => {
-    const { modalActionsCreator } = this.props;
-    const { showModal } = modalActionsCreator;
-    showModal();
-  };
-
-  loadVideo = () => {
-    const { videoActionsCreator, uiActionsCreator } = this.props;
-    const { fetchVideoSuccess, fetchVideoFailed } = videoActionsCreator;
-    const { showLoading, hideLoading } = uiActionsCreator;
-    //showLoading
-    showLoading();
-    //gọi get api
-    apis
-      .getVideos()
-      .then(res => {
-        fetchVideoSuccess(res.data);
-        hideLoading();
-      })
-      .catch(err => {
-        console.log(err);
-        fetchVideoFailed(err);
-        hideLoading();
-      });
   };
 
   render() {

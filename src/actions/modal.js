@@ -10,3 +10,21 @@ export const hideModal = () =>{
         type : modalConstants.HIDE_MODAL
     }
 }
+
+export const changeModalContent = (component) =>{
+    return {
+        type : modalConstants.CHANGE_MODAL_CONTENT,
+        payload :{
+            component
+        }
+    }
+}
+
+export const changeModalTitle = (title) =>{
+    return {
+        type : modalConstants.CHANGE_MODAL_TITLE,
+        payload:{
+            title
+        }
+    }
+}

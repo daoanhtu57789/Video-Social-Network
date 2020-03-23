@@ -24,6 +24,24 @@ class axiosService {
     get(url){
         return this.instance.get(url);
     }
+
+    //thực hiện post dữ liệu
+    //http:localhost:3000/user : post
+    post(url,body){
+        return this.instance.post(url,body);
+    }
+
+    //thực hiện delete dữ liệu
+    //http:localhost:3000/user/id : delete
+    delete(url){
+        return this.instance.delete(url);
+    }
+
+    //thực hiện update dữ liệu
+    //http:localhost:3000/user/id : put
+    update(url,body){
+        return this.instance.put(url,body);
+    }
 }
 
 export default new axiosService();

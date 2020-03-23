@@ -2,7 +2,8 @@ import * as modalContants from './../constants/modal';
 
 const initialState = {
     showModal : false,
-    component : null
+    component : null,
+    title : ''
 }
 
 const reducer = (state = initialState,action) =>{
@@ -18,6 +19,22 @@ const reducer = (state = initialState,action) =>{
             return {
                 ...state,
                 showModal : false
+            }
+        }
+
+        case modalContants.CHANGE_MODAL_CONTENT :{
+            const {component} = action.payload;
+            return {
+                ...state,
+                component : component
+            }
+        }
+
+        case modalContants.CHANGE_MODAL_TITLE :{
+            const {title} = action.payload;
+            return {
+                ...state,
+                title : title
             }
         }
 

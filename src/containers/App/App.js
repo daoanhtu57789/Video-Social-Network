@@ -3,7 +3,9 @@ import React, { Component } from "react";
 //lấy theme để truyền
 import theme from "../../commons/Theme";
 import { ThemeProvider } from "@material-ui/core/styles";
-
+//thông báo khi làm gì thành công hay thất bại toastify
+import { ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //truyền component
 import VideoBoard from "./../VideoBoard/index";
 import CommonModal from './../../components/Modal/index';
@@ -24,6 +26,7 @@ class App extends Component {
           <VideoBoard />
           <CommonModal />
           <GlobalLoading />
+          <ToastContainer autoClose={2000}/>
         </ThemeProvider>
       </Provider>
     );

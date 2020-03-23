@@ -20,8 +20,9 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 
 class Video extends Component {
+
   render() {
-    const { status, classes ,video} = this.props;
+    const { status, classes, video,onClickDelete , onClickEdit } = this.props;
     return (
       <Card className={classes.root}>
         <CardContent>
@@ -36,6 +37,7 @@ class Video extends Component {
                 }
                 title="Đào Anh Tú"
                 style={{ padding: "0" }}
+                subheader={video.date}
               />
             </Grid>
             <Grid item md={4}>
@@ -60,8 +62,8 @@ class Video extends Component {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon /> {video.likeCount}
+          <IconButton aria-label="add to favorites" >
+            <FavoriteIcon color="secondary" /> {video.likeCount}
           </IconButton>
           <IconButton aria-label="share">
             <ShareIcon /> {video.shareCount}
@@ -71,7 +73,7 @@ class Video extends Component {
             aria-label="edit"
             size="small"
             className={classes.fab}
-            // onClick={() => onClickEdit(task)}
+            onClick={() => onClickEdit(video)}
           >
             <EditIcon fontSize="small" />
           </Fab>
@@ -84,7 +86,7 @@ class Video extends Component {
             <DeleteIcon
               fontSize="small"
               //khi click vào button thì sẽ gọi hàm onClickDelete mà ở TaskList truyền vào
-              // onClick={() => onClickDelete(task)}
+              onClick={() => onClickDelete(video)}
             />
           </Fab>
         </CardActions>
