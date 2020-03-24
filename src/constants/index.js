@@ -1,6 +1,8 @@
 //các trạng thái chưa xem , đang xem và đã xem tương ứng với giá trị của nó
 import VideoBoard from './../containers/VideoBoard/index';
 import AdminHomePage from './../containers/AdminHomePage/index';
+import Login from './../containers/Login/index';
+import Signup from './../containers/Signup/index';
 export const STATUSES = [
     {
         value : 0,
@@ -31,4 +33,17 @@ export const PAGE_ROUTES = [
         exact:true,
         name : "Video social network"
     },
+];
+
+export const LOGIN_ROUTES = [
+    {
+        path:'/login',
+        component: Login,
+        name : "Trang Đăng Nhập"
+    },
+    {
+        path:'/signup',
+        component: Signup,
+        name : "Trang Đăng Kí"
+    }
 ];

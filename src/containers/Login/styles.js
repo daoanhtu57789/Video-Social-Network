@@ -1,15 +1,31 @@
-import React, { Component } from 'react';
-//css 
-import {withStyles} from '@material-ui/core/styles';
-import styles from './styles'
-class Login extends Component {
-    render() {
-        return (
-            <div>
-                Đăng Nhập
-            </div>
-        );
-    }
-}
+const styles = theme => ({
+  form: {
+    textAlign: "center"
+  },
+  image: {
+    margin: "20px auto 20px auto",
+    width: "200px",
+    height : "200px"
+  },
+  pageTitle: {
+    margin: "10px auto 10px auto"
+  },
+  textField: {
+    margin: "10px auto 10px auto"
+  },
+  button: {
+    marginTop: 20,
+    position: "relative"
+  },
+  customError: {
+    color: "red",
+    fontSize: "0.8rem",
+    marginTop: 10
+  },
+  progress: {
+    position: 'absolute'
+  },
 
-export default withStyles(styles)(Login);  
+});
+
+export default styles;

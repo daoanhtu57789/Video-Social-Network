@@ -19,6 +19,8 @@ import styles from "./styles";
 
 import { withRouter } from "react-router-dom";
 
+import { NavLink } from "react-router-dom";
+
 const menuId = "primary-search-account-menu";
 class Header extends Component {
   constructor(props) {
@@ -43,6 +45,7 @@ class Header extends Component {
     });
   };
 
+
   render() {
     const { classes,toggleSiderBar } = this.props;
     const { anchorEl, isMenuOpen } = this.state;
@@ -56,8 +59,7 @@ class Header extends Component {
         open={isMenuOpen}
         onClose={this.handleMenuClose}
       >
-        <MenuItem onClick={this.handleMenuClose}>Profile</MenuItem>
-        <MenuItem onClick={this.handleMenuClose}>My account</MenuItem>
+        <MenuItem ><NavLink to ='/login' className={classes.menuLinkActive}>Logout</NavLink></MenuItem>
       </Menu>
     );
 

@@ -1,7 +1,7 @@
 import { fade } from "@material-ui/core/styles";
 const styles = theme => ({
   grow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   menuButton: {
     marginRight: theme.spacing(2)
@@ -58,6 +58,10 @@ const styles = theme => ({
     [theme.breakpoints.up("md")]: {
       display: "none"
     }
+  },
+  menuLinkActive: {
+    textDecoration: "none",
+    color: theme.color.defaultTextColor
   }
 });
 

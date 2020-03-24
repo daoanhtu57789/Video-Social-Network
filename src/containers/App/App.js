@@ -16,8 +16,9 @@ import { Provider } from "react-redux";
 import CssBaseline from "@material-ui/core/CssBaseline";
 //cài đặt route
 import { BrowserRouter, Switch, Redirect } from "react-router-dom";
-import {PAGE_ROUTES} from './../../constants/index';
+import {PAGE_ROUTES , LOGIN_ROUTES} from './../../constants/index';
 import AdminLayoutRoute from './../../commons/Layout/AdminLayoutRoute';
+import LoginLayoutRoute from './../../commons/Layout/LoginLayoutRoute';
 //chaỵ configureStore() để lấy được store
 import configureStore from "./../../redux/configureStore";
 const store = configureStore();
@@ -40,6 +41,22 @@ class App extends Component {
     return xhtml;
   };
 
+  renderLoginRoutes = () =>{
+    let xhtml = null;
+
+    xhtml = LOGIN_ROUTES.map(route => {
+      return (
+        <LoginLayoutRoute 
+          key = {route.path}
+          component = {route.component}
+          path = {route.path}
+          name = {route.name}
+        />
+      );
+    });
+    return xhtml;
+  };
+
   render() {
     return (
       <Provider store={store}>
@@ -51,10 +68,11 @@ class App extends Component {
             <ToastContainer autoClose={2000} />
             <Switch>
               {this.renderAdminRoutes()}
+              {this.renderLoginRoutes()}
               {/* phải load được các component rồi mới chuyển trang login 
                 Redirect điều hướng đến /admin khi load xong trang
               */}
-              <Redirect to="/admin" />
+              <Redirect to="/login" />
             </Switch>
           </ThemeProvider>
         </BrowserRouter>
