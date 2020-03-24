@@ -22,7 +22,7 @@ import ShareIcon from "@material-ui/icons/Share";
 class Video extends Component {
 
   render() {
-    const { status, classes, video,onClickDelete , onClickEdit } = this.props;
+    const { status, classes, video,onClickDelete , onClickEdit,showSiderBar } = this.props;
     return (
       <Card className={classes.root}>
         <CardContent>
@@ -48,7 +48,7 @@ class Video extends Component {
 
         <iframe
           title="ads"
-          width="370"
+          width={showSiderBar? "360" : "420"}
           height="300"
           src={video.link}
           frameBorder="0"

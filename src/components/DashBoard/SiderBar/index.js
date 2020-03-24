@@ -4,6 +4,7 @@ import styles from "./styles";
 import { NavLink } from "react-router-dom";
 import { ListItem, List, Drawer, ListItemText } from "@material-ui/core";
 import { PAGE_ROUTES } from "./../../../constants/index";
+
 class SiderBar extends Component {
   renderListSiderBar = () => {
     const { classes } = this.props;
@@ -31,11 +32,11 @@ class SiderBar extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes ,showSiderBar} = this.props;
     return (
       <Drawer
         variant="persistent"
-        open={true}
+        open={showSiderBar}
         classes={{
           paper: classes.drawerPaper
         }}
@@ -44,6 +45,6 @@ class SiderBar extends Component {
       </Drawer>
     );
   }
-}
+};
 
-export default withStyles(styles)(SiderBar);
+export default (withStyles(styles)(SiderBar));

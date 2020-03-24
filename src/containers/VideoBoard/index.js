@@ -179,7 +179,7 @@ class VideoBoard extends Component {
   };
   //phần nội dung bên trong
   renderBoard = () => {
-    const { listVideo } = this.props;
+    const { listVideo,showSiderBar } = this.props;
     let xhtml = null;
 
     xhtml = (
@@ -195,6 +195,7 @@ class VideoBoard extends Component {
               filterVideoList={filterVideoList}
               onClickDelete={this.onClickDelete}
               onClickEdit={this.onClickEdit}
+              showSiderBar={showSiderBar}
             />
           );
         })}
@@ -238,7 +239,8 @@ class VideoBoard extends Component {
 
 const mapStateToProps = state => {
   return {
-    listVideo: state.video.listVideo
+    listVideo: state.video.listVideo,
+    showSiderBar:state.ui.showSiderBar
   };
 };
 

@@ -1,7 +1,8 @@
 import * as uiConstants from './../constants/ui';
 
 const initialState = {
-    showLoading : false
+    showLoading : false,
+    showSiderBar : true
 };
 
 const reducer = (state = initialState , action) => {
@@ -20,6 +21,14 @@ const reducer = (state = initialState , action) => {
                 showLoading : false
             }
         }
+
+        case uiConstants.SHOW_SIDERBAR :{
+            return {
+                ...state,
+                showSiderBar : !state.showSiderBar
+            }
+        }
+
 
         default : {
             return {

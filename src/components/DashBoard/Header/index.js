@@ -17,6 +17,8 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { withStyles } from "@material-ui/core/styles";
 import styles from "./styles";
 
+import { withRouter } from "react-router-dom";
+
 const menuId = "primary-search-account-menu";
 class Header extends Component {
   constructor(props) {
@@ -40,8 +42,9 @@ class Header extends Component {
       isMenuOpen:false
     });
   };
+
   render() {
-    const { classes } = this.props;
+    const { classes,toggleSiderBar } = this.props;
     const { anchorEl, isMenuOpen } = this.state;
     const renderMenu = (
       <Menu
@@ -57,6 +60,7 @@ class Header extends Component {
         <MenuItem onClick={this.handleMenuClose}>My account</MenuItem>
       </Menu>
     );
+
     return (
       <div className={classes.grow}>
         <AppBar position="static">
@@ -66,6 +70,7 @@ class Header extends Component {
               className={classes.menuButton}
               color="inherit"
               aria-label="open drawer"
+              onClick={toggleSiderBar}
             >
               <MenuIcon />
             </IconButton>
@@ -128,6 +133,7 @@ class Header extends Component {
       </div>
     );
   }
-}
+};
 
-export default withStyles(styles)(Header);
+
+export default withStyles(styles)(withRouter(Header));

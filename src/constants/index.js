@@ -28,7 +28,7 @@ export const PAGE_ROUTES = [
     {
         path:'/admin/videos',
         component: VideoBoard,
-        exact : true,
+        exact:true,
         name : "Video social network"
     },
 ];

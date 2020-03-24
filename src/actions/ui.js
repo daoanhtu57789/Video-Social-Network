@@ -17,3 +17,9 @@ export const hideLoading = () =>{
         type : uiConstants.HIDE_LOADING
     }
 };
+
+export const showSiderBar = () =>{
+    return {
+        type : uiConstants.SHOW_SIDERBAR
+    }
+};

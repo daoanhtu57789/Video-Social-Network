@@ -32,7 +32,7 @@ class App extends Component {
           key = {route.path}
           component = {route.component}
           path = {route.path}
-          exact = {route.path}
+          exact = {route.exact}
           name = {route.name}
         />
       );
