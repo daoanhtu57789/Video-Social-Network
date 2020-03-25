@@ -16,41 +16,43 @@ import { Provider } from "react-redux";
 import CssBaseline from "@material-ui/core/CssBaseline";
 //cài đặt route
 import { BrowserRouter, Switch, Redirect } from "react-router-dom";
-import {PAGE_ROUTES , LOGIN_ROUTES} from './../../constants/index';
-import AdminLayoutRoute from './../../commons/Layout/AdminLayoutRoute';
-import LoginLayoutRoute from './../../commons/Layout/LoginLayoutRoute';
+import { PAGE_ROUTES, LOGIN_ROUTES } from "./../../constants/index";
+import AdminLayoutRoute from "./../../commons/Layout/AdminLayoutRoute";
+import LoginLayoutRoute from "./../../commons/Layout/LoginLayoutRoute";
 //chaỵ configureStore() để lấy được store
 import configureStore from "./../../redux/configureStore";
+
 const store = configureStore();
 class App extends Component {
+  
   //hàm trả về các componet khi nhận đúng route
-  renderAdminRoutes = () =>{
+  renderAdminRoutes = () => {
     let xhtml = null;
 
     xhtml = PAGE_ROUTES.map(route => {
       return (
-        <AdminLayoutRoute 
-          key = {route.path}
-          component = {route.component}
-          path = {route.path}
-          exact = {route.exact}
-          name = {route.name}
+        <AdminLayoutRoute
+          key={route.path}
+          component={route.component}
+          path={route.path}
+          exact={route.exact}
+          name={route.name}
         />
       );
     });
     return xhtml;
   };
 
-  renderLoginRoutes = () =>{
+  renderLoginRoutes = () => {
     let xhtml = null;
 
     xhtml = LOGIN_ROUTES.map(route => {
       return (
-        <LoginLayoutRoute 
-          key = {route.path}
-          component = {route.component}
-          path = {route.path}
-          name = {route.name}
+        <LoginLayoutRoute
+          key={route.path}
+          component={route.component}
+          path={route.path}
+          name={route.name}
         />
       );
     });

@@ -6,6 +6,10 @@ import styles from "./styles";
 import AppIcon from "../../assets/images/corgi.jpg";
 import { Link } from "react-router-dom";
 
+import { withRouter } from "react-router-dom";
+//thông báo khi lỗi
+import {toastError,toastSuccess} from './../../helpers/toastHelpers';
+
 // MUI Stuff
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +20,8 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as uiActions from "./../../actions/ui";
 import { CircularProgress } from "@material-ui/core";
+//firebase
+import fire from './../../config/Fire';
 
 class Signup extends Component {
   constructor() {
@@ -24,16 +30,38 @@ class Signup extends Component {
       email: "",
       password: "",
       confirmPassword: "",
-      handle: "",
       errors: {}
     };
+  }
+
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   }
 
   handleSubmit = event => {
     event.preventDefault();
     const { uiActionCreators } = this.props;
-    const { showLoadingSignup } = uiActionCreators;
+    const { showLoadingSignup,hideLoadingSignup} = uiActionCreators;
     showLoadingSignup();
+    if(this.state.password === this.state.confirmPassword ){
+      fire
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(()=>{
+        toastSuccess("Đăng kí thành công");
+        hideLoadingSignup();
+      })
+      .catch((error) =>{
+          console.log(error);
+          toastError("Tài khoản đã tồn tại.");
+          hideLoadingSignup();
+      });
+    }else{
+      toastError("Mật khẩu không giống nhau hoặc ít hơn 6 kí tự");
+      hideLoadingSignup();
+    }
   };
 
   render() {
@@ -130,4 +158,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(Signup));
+)(withStyles(styles)(withRouter(Signup)));

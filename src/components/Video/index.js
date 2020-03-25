@@ -32,7 +32,7 @@ class Video extends Component {
               <CardHeader
                 avatar={
                   <Avatar aria-label="recipe" className={classes.avatar}>
-                    Đ
+                    {localStorage.getItem('user')[0].toUpperCase()}
                   </Avatar>
                 }
                 title="Đào Anh Tú"

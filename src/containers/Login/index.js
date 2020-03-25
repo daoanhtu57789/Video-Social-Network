@@ -2,37 +2,79 @@ import React, { Component } from "react";
 //css
 import { withStyles } from "@material-ui/core/styles";
 import styles from "./styles";
-import AppIcon from './../../assets/images/corgi.jpg';
-import { Link } from 'react-router-dom';
+import AppIcon from "./../../assets/images/corgi.jpg";
+import { Link } from "react-router-dom";
 
+import { withRouter } from "react-router-dom";
 // MUI Stuff
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import { CircularProgress } from "@material-ui/core";
 //kết nối store
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import * as uiActions from './../../actions/ui';
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as uiActions from "./../../actions/ui";
+//firebase
+import fire from "./../../config/Fire";
+//thông báo khi lỗi
+import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
 class Login extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       email: "",
       password: "",
       errors: {}
     };
   }
+  //sự kiện thay đổi bàn phím
 
-  handleSubmit = (event) =>{
-    event.preventDefault();
-    const {uiActionCreators} = this.props;
-    const {showLoadingLogin} = uiActionCreators;
-    showLoadingLogin(); 
+  handleChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  componentDidMount() {
+    //kết nối đến các tài khoản trên firebase
+    //bắt sự kiện thay đổi tài khoản
+    const { history } = this.props;
+    fire.auth().onAuthStateChanged(user => {
+      if (user) {
+        localStorage.setItem('user',user.email);
+        history.push("./admin");
+      } else {
+        localStorage.setItem('user',null);
+        history.push("./login");
+      }
+    });
   }
+
+  handleSubmit = event => {
+    event.preventDefault();
+    const { uiActionCreators, history } = this.props;
+    const { showLoadingLogin, hideLoadingLogin } = uiActionCreators;
+    showLoadingLogin();
+    fire
+      .auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(u => {
+        hideLoadingLogin();
+        if (history) {
+          toastSuccess("Đăng nhập thành công.");
+          history.push("/admin");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        hideLoadingLogin();
+        toastError("Kiểm tra lại mật khẩu và tài khoản.");
+      });
+  };
   render() {
-    const { classes,showLoadingLogin } = this.props;
+    const { classes, showLoadingLogin } = this.props;
     const { errors } = this.state;
 
     return (
@@ -98,16 +140,19 @@ class Login extends Component {
   }
 }
 
-const mapStateToProps = (state) =>{
+const mapStateToProps = state => {
   return {
-    showLoadingLogin : state.ui.showLoadingLogin
-  }
-}
+    showLoadingLogin: state.ui.showLoadingLogin
+  };
+};
 
-const mapDispatchToProps = (dispatch) =>{
+const mapDispatchToProps = dispatch => {
   return {
-    uiActionCreators : bindActionCreators(uiActions,dispatch)
-  }
-}
+    uiActionCreators: bindActionCreators(uiActions, dispatch)
+  };
+};
 
-export default connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(Login));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(withRouter(Login)));

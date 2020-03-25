@@ -12,21 +12,21 @@ import cn from "classnames";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as uiActions from './../../actions/ui'; 
+
 class DashBoard extends Component {
-  
+
   toggleSiderBar(){
     const {uiActionsCreator} = this.props;
     const {showSiderBar} = uiActionsCreator;
     showSiderBar();
   }
-
   
   render() {
-    const { classes, children, name , showSiderBar } = this.props;
+    const { classes, children, name , showSiderBar  } = this.props;
     return (
       <div>
         {/* Header của trang web */}
-        <Header name={name} toggleSiderBar={() => this.toggleSiderBar()}/>
+        <Header name={name}  toggleSiderBar={() => this.toggleSiderBar()}/>
 
         {/* Content của trang web */}
         <div className={classes.wrapper}>

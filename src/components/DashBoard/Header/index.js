@@ -9,7 +9,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
-import AccountCircle from "@material-ui/icons/AccountCircle";
 import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
@@ -19,7 +18,9 @@ import styles from "./styles";
 
 import { withRouter } from "react-router-dom";
 
-import { NavLink } from "react-router-dom";
+//fire
+import fire from "./../../../config/Fire";
+import { Avatar } from "@material-ui/core";
 
 const menuId = "primary-search-account-menu";
 class Header extends Component {
@@ -41,13 +42,19 @@ class Header extends Component {
   handleMenuClose = () => {
     this.setState({
       anchorEl: null,
-      isMenuOpen:false
+      isMenuOpen: false
     });
   };
 
+  //Đăng xuất
+  handleLogout = () => {
+    const { history } = this.props;
+    fire.auth().signOut();
+    history.push("/login");
+  };
 
   render() {
-    const { classes,toggleSiderBar } = this.props;
+    const { classes, toggleSiderBar } = this.props;
     const { anchorEl, isMenuOpen } = this.state;
     const renderMenu = (
       <Menu
@@ -59,7 +66,13 @@ class Header extends Component {
         open={isMenuOpen}
         onClose={this.handleMenuClose}
       >
-        <MenuItem ><NavLink to ='/login' className={classes.menuLinkActive}>Logout</NavLink></MenuItem>
+        <MenuItem
+          className={classes.menuLinkActive}
+          onClick={this.handleLogout}
+        >
+          {" "}
+          Logout
+        </MenuItem>
       </Menu>
     );
 
@@ -115,7 +128,9 @@ class Header extends Component {
                 onClick={this.handleProfileMenuOpen}
                 color="inherit"
               >
-                <AccountCircle />
+                <Avatar aria-label="recipe" style={{backgroundColor:"red"}} className={classes.avatar}>
+                  {localStorage.getItem('user')[0].toUpperCase()}
+                </Avatar>
               </IconButton>
             </div>
             <div className={classes.sectionMobile}>
@@ -135,7 +150,6 @@ class Header extends Component {
       </div>
     );
   }
-};
-
+}
 
 export default withStyles(styles)(withRouter(Header));
