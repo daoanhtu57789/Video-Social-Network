@@ -21,6 +21,7 @@ import * as videoActions from "./../../actions/video";
 import * as uiActions from "./../../actions/ui";
 //apis
 import * as apis from "./../../apis/video";
+import fire from "./../../config/Fire";
 //thông báo xóa thành công hoặc thất bại
 import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
 class VideoBoard extends Component {
@@ -31,11 +32,27 @@ class VideoBoard extends Component {
     const { showLoading, hideLoading } = uiActionsCreator;
     //showLoading
     showLoading();
-    //gọi get api
-    apis
-      .getVideos()
-      .then(res => {
-        fetchVideoSuccess(res.data);
+    //lấy dữ liệu trên firebase có database là videos
+    fire
+      .firestore()
+      .collection("videos")
+      .get()
+      .then(data => {
+        let videos = [];
+        data.forEach(doc => {
+          videos.push({
+            videoId: doc.id,
+            email: doc.data().email,
+            link: doc.data().link,
+            name: doc.data().name,
+            createdAt: doc.data().createdAt,
+            shareCount: doc.data().shareCount,
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            status : doc.data().status
+          });
+        });
+        fetchVideoSuccess(videos);
         setTimeout(hideLoading, 1000);
         toastSuccess("Lấy dữ liệu thành công =) .");
       })
@@ -73,19 +90,35 @@ class VideoBoard extends Component {
     const { showLoading, hideLoading } = uiActionsCreator;
     //showLoading
     showLoading();
-    //gọi get api
-    apis
-      .getVideos()
-      .then(res => {
-        fetchVideoSuccess(res.data);
+    
+    fire
+      .firestore()
+      .collection("videos")
+      .get()
+      .then(data => {
+        let videos = [];
+        data.forEach(doc => {
+          videos.push({
+            videoId: doc.id,
+            email: doc.data().email,
+            link: doc.data().link,
+            name: doc.data().name,
+            createdAt: doc.data().createdAt,
+            shareCount: doc.data().shareCount,
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            status : doc.data().status
+          });
+        });
+        fetchVideoSuccess(videos);
         setTimeout(hideLoading, 1000);
-        toastSuccess("Lấy dữ liệu thành công =) .");
+        toastSuccess("Lấy dữ liệu thành công .");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
         setTimeout(hideLoading, 1000);
-        toastError("Lấy dữ liệu thất bại :(");
+        toastError("Lấy dữ liệu thất bại.");
       });
   };
 
@@ -179,7 +212,7 @@ class VideoBoard extends Component {
   };
   //phần nội dung bên trong
   renderBoard = () => {
-    const { listVideo,showSiderBar } = this.props;
+    const { listVideo, showSiderBar } = this.props;
     let xhtml = null;
 
     xhtml = (
@@ -240,7 +273,7 @@ class VideoBoard extends Component {
 const mapStateToProps = state => {
   return {
     listVideo: state.video.listVideo,
-    showSiderBar:state.ui.showSiderBar
+    showSiderBar: state.ui.showSiderBar
   };
 };
 

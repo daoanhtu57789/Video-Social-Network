@@ -17,6 +17,7 @@ import * as videoActions from "./../../actions/video";
 import * as uiActions from "./../../actions/ui";
 //axios
 import * as axios from "./../../apis/video";
+import fire from './../../config/Fire';
 //template ui
 import { Grid, Button, Box, MenuItem } from "@material-ui/core";
 //thông báo xóa thành công hoặc thất bại
@@ -74,29 +75,39 @@ class VideoForm extends Component {
           toastError("Cập nhật thông tin thất bại.");
         });
     } else {
-      const newData = {
-        description: data.description,
+    
+      const newVideo = {
+        email: localStorage.getItem('user'),
         link: data.link,
-        status: 0,
-        likeCount: 0,
+        name: data.name,
+        createdAt: toStringDate,
         shareCount: 0,
-        date: toStringDate
+        likeCount: 0,
+        description: data.description,
+        status : 0
       };
-      axios
-        .postVideo(newData)
-        .then(resp => {
+      
+      //kết nối database với tên là videos trên firebase 
+      fire.firestore().collection('videos')
+        //thêm mới video
+        .add(newVideo)
+        //thành công trả về 1 doc
+        .then((doc) => {
           //ẩn form nhập
           hideModal();
           //hiện loading chờ
           showLoading();
-          //post dữ liệu lên
-          addVideoSuccess(resp.data);
+          //lấy dữ liệu từ doc về
+          doc.get().then(data => {
+            //post dữ liệu lên;
+            addVideoSuccess(data.data());
+          });
           //post xong thì đóng loading
           setTimeout(hideLoading, 1000);
           //thông báo thêm thành công
           toastSuccess("Thêm thông tin thành công.");
         })
-        .catch(err => {
+        .catch((err) => {
           hideModal();
           showLoading();
           console.error(err);
@@ -139,6 +150,19 @@ class VideoForm extends Component {
         onSubmit={handleSubmit(this.handleSubmitForm)}
       >
         <Grid container>
+        <Grid item md={12}>
+            <Field
+              id="name"
+              label="Tên Video"
+              multiline
+              rowmax="4"
+              margin="normal"
+              name="name"
+              className={classes.textField}
+              component={renderTextField}
+            />
+          </Grid>
+
           <Grid item md={12}>
             <Field
               id="description"
@@ -149,6 +173,7 @@ class VideoForm extends Component {
               name="description"
             />
           </Grid>
+          
           <Grid item md={12}>
             <Field
               id="link"
@@ -198,6 +223,7 @@ const mapStateToProps = state => {
         ? state.video.videoEditing.description
         : null,
       link: state.video.videoEditing ? state.video.videoEditing.link : null,
+      name: state.video.videoEditing ? state.video.videoEditing.name : null,
       status: state.video.videoEditing ? state.video.videoEditing.status : null
     }
   };

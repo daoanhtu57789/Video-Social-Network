@@ -32,18 +32,23 @@ class Video extends Component {
               <CardHeader
                 avatar={
                   <Avatar aria-label="recipe" className={classes.avatar}>
-                    {localStorage.getItem('user')[0].toUpperCase()}
+                    {video.email[0].toUpperCase()}
                   </Avatar>
                 }
                 title="Đào Anh Tú"
                 style={{ padding: "0" }}
-                subheader={video.date}
+                subheader={video.createdAt}
               />
             </Grid>
             <Grid item md={4}>
               {status.label}
             </Grid>
           </Grid>
+        </CardContent>
+        <CardContent>
+          <strong>
+            {video.name}
+          </strong>
         </CardContent>
 
         <iframe
