@@ -27,7 +27,12 @@ class VideoBoard extends Component {
   //lấy dữ liệu khi mở trang
   componentDidMount() {
     const { videoActionsCreator, uiActionsCreator } = this.props;
-    const { fetchVideoSuccess, fetchVideoFailed } = videoActionsCreator;
+    const {
+      fetchVideoSuccess,
+      fetchVideoFailed,
+      fetchLikeSuccess,
+      fetchLikeFailed
+    } = videoActionsCreator;
     const { showLoading, hideLoading } = uiActionsCreator;
     //showLoading
     showLoading();
@@ -61,6 +66,26 @@ class VideoBoard extends Component {
         setTimeout(hideLoading, 1000);
         toastError("Lấy dữ liệu thất bại :(");
       });
+    //lấy dữ danh sách đã like
+    fire
+      .firestore()
+      .collection("likes")
+      .where("email", "==", localStorage.getItem("user"))
+      .get()
+      .then(likeData => {
+        let likes = [];
+        likeData.forEach(doc => {
+          likes.push({
+            email: doc.data().email,
+            videoId: doc.data().videoId
+          });
+        });
+        fetchLikeSuccess(likes);
+      })
+      .catch(err => {
+        fetchLikeFailed(err);
+        console.log(err);
+      });
   }
   //Thanh tìm kiếm
   renderSearchBox = () => {
@@ -71,7 +96,7 @@ class VideoBoard extends Component {
 
   //click button up video
   openForm = () => {
-    const { modalActionsCreator,videoActionsCreator } = this.props;
+    const { modalActionsCreator, videoActionsCreator } = this.props;
 
     const {
       showModal,
@@ -89,7 +114,12 @@ class VideoBoard extends Component {
   //click button load video
   loadVideo = () => {
     const { videoActionsCreator, uiActionsCreator } = this.props;
-    const { fetchVideoSuccess, fetchVideoFailed } = videoActionsCreator;
+    const {
+      fetchVideoSuccess,
+      fetchVideoFailed,
+      fetchLikeSuccess,
+      fetchLikeFailed
+    } = videoActionsCreator;
     const { showLoading, hideLoading } = uiActionsCreator;
     //showLoading
     showLoading();
@@ -122,6 +152,27 @@ class VideoBoard extends Component {
         fetchVideoFailed(err);
         setTimeout(hideLoading, 1000);
         toastError("Lấy dữ liệu thất bại.");
+      });
+
+    //lấy dữ danh sách đã like
+    fire
+      .firestore()
+      .collection("likes")
+      .where("email", "==", localStorage.getItem("user"))
+      .get()
+      .then(likeData => {
+        let likes = [];
+        likeData.forEach(doc => {
+          likes.push({
+            email: doc.data().email,
+            videoId: doc.data().videoId
+          });
+        });
+        fetchLikeSuccess(likes);
+      })
+      .catch(err => {
+        fetchLikeFailed(err);
+        console.log(err);
       });
   };
 
@@ -181,16 +232,19 @@ class VideoBoard extends Component {
     //showLoading
     showLoading();
     //gọi get xóa database
-    const document = fire.firestore().collection('videos').doc(`/${video.videoId}`);
+    const document = fire
+      .firestore()
+      .collection("videos")
+      .doc(`/${video.videoId}`);
     document
       .get()
       .then(doc => {
         if (!doc.exists) {
           deleteVideoFailed(null);
           setTimeout(hideLoading, 1000);
-          return toastError("Scream not found");
+          return toastError("Video not found");
         }
-        if (doc.data().email !== localStorage.getItem('user')) {
+        if (doc.data().email !== localStorage.getItem("user")) {
           deleteVideoFailed(null);
           setTimeout(hideLoading, 1000);
           toastError("This is not your video.");
@@ -222,9 +276,57 @@ class VideoBoard extends Component {
     changeModalTitle("Sửa Thông Tin Video");
     changeModalContent(<VideoForm video={video} />);
   };
+  //Like Video
+
+  //Edit Video
+  onClickLike = video => {
+    const { videoActionsCreator } = this.props;
+    const {
+      likeVideo,
+      unLikeVideo,
+      fetchLikeSuccess,
+      fetchLikeFailed
+    } = videoActionsCreator;
+    // likeVideo({ emali: localStorage.getItem("user"), videoId: video.videoId });
+    // unLikeVideo({
+    //   emali: localStorage.getItem("user"),
+    //   videoId: video.videoId
+    // });
+    //thêm vào database likes
+    fire
+      .firestore()
+      .collection("likes")
+      .add({ email: localStorage.getItem("user"), videoId: video.videoId })
+      .then(doc => {
+        console.log(doc.id);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    //lấy dữ danh sách đã like
+    fire
+      .firestore()
+      .collection("likes")
+      .where("email", "==", localStorage.getItem("user"))
+      .get()
+      .then(likeData => {
+        let likes = [];
+        likeData.forEach(doc => {
+          likes.push({
+            email: doc.data().email,
+            videoId: doc.data().videoId
+          });
+        });
+        fetchLikeSuccess(likes);
+      })
+      .catch(err => {
+        fetchLikeFailed(err);
+        console.log(err);
+      });
+  };
   //phần nội dung bên trong
   renderBoard = () => {
-    const { listVideo, showSiderBar } = this.props;
+    const { listVideo, showSiderBar, listLike } = this.props;
     let xhtml = null;
 
     xhtml = (
@@ -240,7 +342,9 @@ class VideoBoard extends Component {
               filterVideoList={filterVideoList}
               onClickDelete={this.onClickDelete}
               onClickEdit={this.onClickEdit}
+              onClickLike={this.onClickLike}
               showSiderBar={showSiderBar}
+              listLike={listLike}
             />
           );
         })}
@@ -285,7 +389,8 @@ class VideoBoard extends Component {
 const mapStateToProps = state => {
   return {
     listVideo: state.video.listVideo,
-    showSiderBar: state.ui.showSiderBar
+    showSiderBar: state.ui.showSiderBar,
+    listLike: state.video.listLike
   };
 };
 

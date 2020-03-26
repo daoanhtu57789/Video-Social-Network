@@ -1,13 +1,5 @@
 import * as videoConstants from './../constants/videos';
 //Load Video
-export const fetchVideo = (params = {}) =>{
-    return {
-        type : videoConstants.FETCH_VIDEO,
-        payload:{
-            params
-        }
-    }
-}
 
 export const fetchVideoSuccess = (data) =>{
     return {
@@ -28,11 +20,7 @@ export const fetchVideoFailed = (error) =>{
 }
 
 //Post Video
-export const addVideo = () =>{
-    return {
-        type : videoConstants.ADD_VIDEO
-    }
-}
+
 
 export const addVideoSuccess = (data) =>{
     return {
@@ -53,11 +41,7 @@ export const addVideoFailed = (error) =>{
 }
 
 //Delete Video
-export const deleteVideo = () =>{
-    return {
-        type : videoConstants.DELETE_VIDEO
-    }
-}
+
 
 export const deleteVideoSuccess = (videoId) =>{
     return {
@@ -79,11 +63,6 @@ export const deleteVideoFailed = (error) =>{
 
 
 //update Video
-export const updateVideo = () =>{
-    return {
-        type : videoConstants.UPDATE_VIDEO
-    }
-}
 
 export const updateVideoSuccess = (data) =>{
     return {
@@ -110,5 +89,41 @@ export const setVideoEditing = (data) =>{
         payload:{
             data
         }
+    }
+}
+//lấy danh sách like
+
+export const fetchLikeSuccess = (data) =>{
+    return {
+        type : videoConstants.FETCH_LIKE_SUCCESS,
+        payload:{
+            data
+        }
+    }
+}
+
+export const fetchLikeFailed = (error) =>{
+    return {
+        type : videoConstants.FETCH_LIKE_FAILED,
+        payload:{
+            error
+        }
+    }
+}
+
+//like
+export const likeVideo = (data)=>{
+    return {
+        type : videoConstants.LIKE,
+        payload:{
+            data
+        }
+    }
+}
+
+export const unLikeVideo= (data) =>{
+    return {
+        type : videoConstants.UN_LIKE,
+        payload:{data}
     }
 }

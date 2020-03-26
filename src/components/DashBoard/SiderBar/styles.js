@@ -5,7 +5,8 @@ const styles = (theme) => ({
         maxWidth: drawerWidth,
         zIndex: 10, //để cho ẩn sau loading
         height: "100%",
-        position: "relative"
+        position: "fixed",
+        top:'60px'
     },
     link: {
         textDecoration: "none",

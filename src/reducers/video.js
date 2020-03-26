@@ -2,18 +2,13 @@ import * as videoConstants from "../constants/videos";
 
 const initialState = {
   listVideo: [],
-  videoEditing : null
+  videoEditing : null,
+  listLike:[],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     //get data
-    case videoConstants.FETCH_VIDEO: {
-      return {
-        ...state,
-        videoEditing : null
-      };
-    }
 
     case videoConstants.FETCH_VIDEO_SUCCESS: {
       const { data } = action.payload;
@@ -33,12 +28,7 @@ const reducer = (state = initialState, action) => {
     }
 
     //khi post data lên và nhận đc data trả về
-    case videoConstants.ADD_VIDEO: {
-      return {
-        ...state
-      };
-    }
-
+  
     case videoConstants.ADD_VIDEO_SUCCESS: {
       const { data } = action.payload;
       return {
@@ -56,12 +46,7 @@ const reducer = (state = initialState, action) => {
 
     
     //khi post data lên và nhận đc data trả về
-    case videoConstants.DELETE_VIDEO: {
-      return {
-        ...state
-      };
-    }
-
+   
     case videoConstants.DELETE_VIDEO_SUCCESS: {
       const { videoId} = action.payload;
       return {
@@ -78,14 +63,8 @@ const reducer = (state = initialState, action) => {
     }
 
     //khi put data lên và nhận đc data trả về
-    case videoConstants.UPDATE_VIDEO: {
-      return {
-        ...state
-      };
-    }
-
     case videoConstants.UPDATE_VIDEO_SUCCESS: {
-      const { data} = action.payload;
+      const { data } = action.payload;
       return {
         ...state,
         listVideo: [data].concat(state.listVideo.filter(video => video.videoId !== data.videoId)),
@@ -106,6 +85,39 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         videoEditing : data
+      };
+    }
+
+    //get likelist
+    
+    case videoConstants.FETCH_LIKE_SUCCESS: {
+      const { data } = action.payload;
+      return {
+        ...state,
+        listLike: data
+      };
+    }
+
+    case videoConstants.FETCH_LIKE_FAILED: {
+      return {
+        ...state
+      };
+    }
+
+    //like video
+    case videoConstants.LIKE: {
+      const {data} = action.payload
+      console.log(data);
+      return {
+        ...state
+      };
+    }
+
+    case videoConstants.UN_LIKE: {
+      const {data} = action.payload
+      console.log(data);
+      return {
+        ...state
       };
     }
 

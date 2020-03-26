@@ -53,6 +53,8 @@ class Header extends Component {
     history.push("/login");
   };
 
+  
+
   render() {
     const { classes, toggleSiderBar } = this.props;
     const { anchorEl, isMenuOpen } = this.state;

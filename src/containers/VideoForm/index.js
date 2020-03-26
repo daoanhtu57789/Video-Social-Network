@@ -34,7 +34,8 @@ class VideoForm extends Component {
       addVideoSuccess,
       addVideoFailed,
       updateVideoSuccess,
-      updateVideoFailed
+      updateVideoFailed,
+      fetchVideoSuccess
     } = videoActionsCreator;
     const { hideModal } = modalActionsCreator;
     const { showLoading, hideLoading } = uiActionsCreator;
@@ -142,6 +143,27 @@ class VideoForm extends Component {
           setTimeout(hideLoading, 1000);
           //thông báo thêm thành công
           toastSuccess("Thêm thông tin thành công.");
+          fire
+          .firestore()
+          .collection("videos")
+          .get()
+          .then(data => {
+            let videos = [];
+            data.forEach(doc => {
+              videos.push({
+                videoId: doc.id,
+                email: doc.data().email,
+                link: doc.data().link,
+                name: doc.data().name,
+                createdAt: doc.data().createdAt,
+                shareCount: doc.data().shareCount,
+                likeCount: doc.data().likeCount,
+                description: doc.data().description,
+                status: doc.data().status
+              });
+            });
+            fetchVideoSuccess(videos);
+          })
         })
         .catch(err => {
           hideModal();
