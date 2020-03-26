@@ -18,8 +18,6 @@ export const STATUSES = [
     }
 ];
 
-export const API_ENDPOINT = 'http://localhost:3000';
-
 export const PAGE_ROUTES = [
     {
         path:'/admin',

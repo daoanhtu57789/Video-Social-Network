@@ -19,8 +19,7 @@ import { bindActionCreators } from "redux";
 import * as modalActions from "./../../actions/modal";
 import * as videoActions from "./../../actions/video";
 import * as uiActions from "./../../actions/ui";
-//apis
-import * as apis from "./../../apis/video";
+//kết nối vs firebase
 import fire from "./../../config/Fire";
 //thông báo xóa thành công hoặc thất bại
 import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
@@ -49,7 +48,7 @@ class VideoBoard extends Component {
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            status : doc.data().status
+            status: doc.data().status
           });
         });
         fetchVideoSuccess(videos);
@@ -72,12 +71,16 @@ class VideoBoard extends Component {
 
   //click button up video
   openForm = () => {
-    const { modalActionsCreator } = this.props;
+    const { modalActionsCreator,videoActionsCreator } = this.props;
+
     const {
       showModal,
       changeModalContent,
       changeModalTitle
     } = modalActionsCreator;
+    const { setVideoEditing } = videoActionsCreator;
+    //truyền video cần xét vào
+    setVideoEditing(null);
     showModal();
     changeModalTitle("Thêm Mới Link Video");
     changeModalContent(<VideoForm />);
@@ -90,7 +93,7 @@ class VideoBoard extends Component {
     const { showLoading, hideLoading } = uiActionsCreator;
     //showLoading
     showLoading();
-    
+
     fire
       .firestore()
       .collection("videos")
@@ -107,7 +110,7 @@ class VideoBoard extends Component {
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            status : doc.data().status
+            status: doc.data().status
           });
         });
         fetchVideoSuccess(videos);
@@ -136,7 +139,7 @@ class VideoBoard extends Component {
     changeModalContent(
       <Grid container>
         <Grid item md={12}>
-          Bạn có chắc muốn xóa <strong>{video.description}</strong> không?
+          Bạn có chắc muốn xóa <strong>{video.name}</strong> không?
         </Grid>
         <Grid item md={12}>
           {/* flexDirection="row-reverse" Đảo ngược vị trí button ở trong */}
@@ -177,21 +180,30 @@ class VideoBoard extends Component {
     hideModal();
     //showLoading
     showLoading();
-    //gọi get api
-    apis
-      .deleteVideo(video.id)
-      .then(res => {
-        if (res.status === 200) {
-          deleteVideoSuccess(video.id);
+    //gọi get xóa database
+    const document = fire.firestore().collection('videos').doc(`/${video.videoId}`);
+    document
+      .get()
+      .then(doc => {
+        if (!doc.exists) {
+          deleteVideoFailed(null);
           setTimeout(hideLoading, 1000);
-          toastSuccess("Xóa dữ liệu thành công =) ");
+          return toastError("Scream not found");
+        }
+        if (doc.data().email !== localStorage.getItem('user')) {
+          deleteVideoFailed(null);
+          setTimeout(hideLoading, 1000);
+          toastError("This is not your video.");
+        } else {
+          deleteVideoSuccess(video.videoId);
+          setTimeout(hideLoading, 1000);
+          toastSuccess("video deleted successfully");
+          document.delete();
         }
       })
       .catch(err => {
-        console.log(err);
-        deleteVideoFailed(err);
-        setTimeout(hideLoading, 1000);
-        toastError("Xóa dữ liệu thất bại :(");
+        console.error(err);
+        toastError(err.code);
       });
   };
 

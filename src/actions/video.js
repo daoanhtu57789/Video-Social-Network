@@ -59,11 +59,11 @@ export const deleteVideo = () =>{
     }
 }
 
-export const deleteVideoSuccess = (idVideo) =>{
+export const deleteVideoSuccess = (videoId) =>{
     return {
         type : videoConstants.DELETE_VIDEO_SUCCESS,
         payload:{
-            idVideo
+            videoId
         }
     }
 }

@@ -63,10 +63,10 @@ const reducer = (state = initialState, action) => {
     }
 
     case videoConstants.DELETE_VIDEO_SUCCESS: {
-      const { idVideo} = action.payload;
+      const { videoId} = action.payload;
       return {
         ...state,
-        listVideo: state.listVideo.filter(video => video.id !== idVideo),
+        listVideo: state.listVideo.filter(video => video.videoId !== videoId),
         videoEditing : null
       };
     }
@@ -88,7 +88,7 @@ const reducer = (state = initialState, action) => {
       const { data} = action.payload;
       return {
         ...state,
-        listVideo: [data].concat(state.listVideo.filter(video => video.id !== data.id)),
+        listVideo: [data].concat(state.listVideo.filter(video => video.videoId !== data.videoId)),
         videoEditing : null
       };
     }

@@ -15,15 +15,14 @@ import { bindActionCreators } from "redux";
 import * as modalActions from "./../../actions/modal";
 import * as videoActions from "./../../actions/video";
 import * as uiActions from "./../../actions/ui";
-//axios
-import * as axios from "./../../apis/video";
-import fire from './../../config/Fire';
+//firebase
+import fire from "./../../config/Fire";
 //template ui
 import { Grid, Button, Box, MenuItem } from "@material-ui/core";
 //thông báo xóa thành công hoặc thất bại
 import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
 class VideoForm extends Component {
-  handleSubmitForm = data => {
+  handleSubmitForm = dataVideo => {
     //phải dùng errow function
     const {
       videoActionsCreator,
@@ -42,57 +41,94 @@ class VideoForm extends Component {
     let dateNow = new Date();
     const toStringDate = `${dateNow.getHours()}:${dateNow.getMinutes()}:${dateNow.getSeconds()} ${dateNow.getDate()} thg${dateNow.getMonth()} ${dateNow.getFullYear()}`;
 
-    if (videoEditing && videoEditing.id) {
-      const newData = {
-        description: data.description,
-        link: data.link,
-        status: data.status,
-        likeCount: 0,
-        shareCount: 0,
-        date: toStringDate
-      };
-      axios
-        .updateVideo(videoEditing.id, newData)
-        .then(resp => {
-          //ẩn form nhập
-          hideModal();
-          //hiện loading chờ
-          showLoading();
-          //post dữ liệu lên
-          updateVideoSuccess(resp.data);
-          //post xong thì đóng loading
-          setTimeout(hideLoading, 1000);
-          //thông báo update thành công
-          toastSuccess("Cập nhật thông tin thành công.");
+    if (videoEditing && videoEditing.videoId) {
+      
+
+      //lấy video đang edit
+      const videoDocument = fire
+        .firestore()
+        .collection("videos")
+        .doc(`/${videoEditing.videoId}`);
+
+      videoDocument
+        .get()
+        .then(doc => {
+          //kiểm tra xem video lấy có tồn tại không
+          if (doc.exists) {
+            return videoDocument.get();
+          } else {
+            return toastError("Video not found");
+          }
+        })
+        .then(data => {
+          if (!data) {
+            toastError("Video not data");
+          } else if(videoEditing.email === localStorage.getItem('user')){
+            videoDocument.update({
+              videoId: videoEditing.videoId,
+              email: videoEditing.email,
+              description: dataVideo.description,
+              link: videoEditing.link,
+              status: dataVideo.status,
+              likeCount: videoEditing.likeCount,
+              shareCount: videoEditing.shareCount,
+              createdAt: videoEditing.createdAt,
+              name: dataVideo.name
+            });
+            //ẩn form nhập
+            hideModal();
+            //hiện loading chờ
+            showLoading();
+            //post dữ liệu lên
+            updateVideoSuccess({
+              videoId: videoEditing.videoId,
+              email: videoEditing.email,
+              description: dataVideo.description,
+              link: videoEditing.link,
+              status: dataVideo.status,
+              likeCount: videoEditing.likeCount,
+              shareCount: videoEditing.shareCount,
+              createdAt: videoEditing.createdAt,
+              name: dataVideo.name
+            });
+            //post xong thì đóng loading
+            setTimeout(hideLoading, 1000);
+            //thông báo update thành công
+            toastSuccess("Cập nhật thông tin thành công.");  
+          }
+          else{
+            hideModal();
+            toastError("This is not your video");
+          }
         })
         .catch(err => {
           hideModal();
           showLoading();
-          console.error(err);
           updateVideoFailed(err);
           setTimeout(hideLoading, 1000);
-          //thông báo update thất bại
-          toastError("Cập nhật thông tin thất bại.");
+          console.error(err);
+          toastError(err.code);
         });
     } else {
-    
       const newVideo = {
-        email: localStorage.getItem('user'),
-        link: data.link,
-        name: data.name,
+        email: localStorage.getItem("user"),
+        link: dataVideo.link,
+        name: dataVideo.name,
         createdAt: toStringDate,
         shareCount: 0,
         likeCount: 0,
-        description: data.description,
-        status : 0
+        description: dataVideo.description,
+        status: 0
       };
-      
-      //kết nối database với tên là videos trên firebase 
-      fire.firestore().collection('videos')
+
+      //kết nối database với tên là videos trên firebase
+      fire
+        .firestore()
+        .collection("videos")
         //thêm mới video
         .add(newVideo)
         //thành công trả về 1 doc
-        .then((doc) => {
+        .then(doc => {
           //ẩn form nhập
           hideModal();
           //hiện loading chờ
@@ -107,7 +143,7 @@ class VideoForm extends Component {
           //thông báo thêm thành công
           toastSuccess("Thêm thông tin thành công.");
         })
-        .catch((err) => {
+        .catch(err => {
           hideModal();
           showLoading();
           console.error(err);
@@ -121,7 +157,7 @@ class VideoForm extends Component {
   renderStatusSelection() {
     let xhtml = null;
     const { classes, videoEditing } = this.props;
-    if (videoEditing && videoEditing.id) {
+    if (videoEditing && videoEditing.videoId) {
       xhtml = (
         <Field
           id="status"
@@ -141,7 +177,12 @@ class VideoForm extends Component {
 
   render() {
     //handleSubmit là hàm mà redux-form nó cung cấp cho
-    const { classes, modalActionsCreator, handleSubmit } = this.props;
+    const {
+      classes,
+      modalActionsCreator,
+      handleSubmit,
+      videoEditing
+    } = this.props;
     const { hideModal } = modalActionsCreator;
     return (
       //onSubmit sẽ truyền value của Field có name là link và description vào hàm handleSubmitForm
@@ -150,7 +191,7 @@ class VideoForm extends Component {
         onSubmit={handleSubmit(this.handleSubmitForm)}
       >
         <Grid container>
-        <Grid item md={12}>
+          <Grid item md={12}>
             <Field
               id="name"
               label="Tên Video"
@@ -173,20 +214,23 @@ class VideoForm extends Component {
               name="description"
             />
           </Grid>
-          
-          <Grid item md={12}>
-            <Field
-              id="link"
-              label="Link Video"
-              multiline
-              rowmax="4"
-              margin="normal"
-              name="link"
-              className={classes.textField}
-              component={renderTextField}
-            />
-          </Grid>
-          {this.renderStatusSelection()}
+
+          {videoEditing && videoEditing.videoId ? (
+            this.renderStatusSelection()
+          ) : (
+            <Grid item md={12}>
+              <Field
+                id="link"
+                label="Link Video"
+                multiline
+                rowmax="4"
+                margin="normal"
+                name="link"
+                className={classes.textField}
+                component={renderTextField}
+              />
+            </Grid>
+          )}
           {/* phần button */}
           <Grid item md={12}>
             {/* flexDirection="row-reverse" Đảo ngược vị trí button ở trong */}
@@ -222,7 +266,6 @@ const mapStateToProps = state => {
       description: state.video.videoEditing
         ? state.video.videoEditing.description
         : null,
-      link: state.video.videoEditing ? state.video.videoEditing.link : null,
       name: state.video.videoEditing ? state.video.videoEditing.name : null,
       status: state.video.videoEditing ? state.video.videoEditing.status : null
     }
