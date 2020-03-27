@@ -54,17 +54,17 @@ class VideoBoard extends Component {
             likeCount: doc.data().likeCount,
             description: doc.data().description,
             status: doc.data().status,
-            title : doc.data().title
+            title: doc.data().title
           });
         });
         fetchVideoSuccess(videos);
-        setTimeout(hideLoading, 1000);
+        setTimeout(hideLoading, 500);
         toastSuccess("Load Success.");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
-        setTimeout(hideLoading, 1000);
+        setTimeout(hideLoading, 500);
         toastError("Load Failed.");
       });
     //lấy dữ danh sách đã like
@@ -77,7 +77,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
-            likeId:doc.id,
+            likeId: doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -143,17 +143,17 @@ class VideoBoard extends Component {
             likeCount: doc.data().likeCount,
             description: doc.data().description,
             status: doc.data().status,
-            title : doc.data().title
+            title: doc.data().title
           });
         });
         fetchVideoSuccess(videos);
-        setTimeout(hideLoading, 1000);
+        setTimeout(hideLoading, 500);
         toastSuccess("Load Success .");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
-        setTimeout(hideLoading, 1000);
+        setTimeout(hideLoading, 500);
         toastError("Load Failed.");
       });
 
@@ -167,7 +167,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
-            likeId : doc.id,
+            likeId: doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -194,7 +194,7 @@ class VideoBoard extends Component {
     changeModalContent(
       <Grid container>
         <Grid item md={12}>
-          Bạn có chắc muốn xóa <strong>{video.name}</strong> không?
+          Bạn có chắc muốn xóa <strong>{video.title}</strong> không?
         </Grid>
         <Grid item md={12}>
           {/* flexDirection="row-reverse" Đảo ngược vị trí button ở trong */}
@@ -245,17 +245,35 @@ class VideoBoard extends Component {
       .then(doc => {
         if (!doc.exists) {
           deleteVideoFailed(null);
-          setTimeout(hideLoading, 1000);
+          setTimeout(hideLoading, 500);
           return toastError("Video not found");
         }
         if (doc.data().email !== localStorage.getItem("user")) {
           deleteVideoFailed(null);
-          setTimeout(hideLoading, 1000);
+          setTimeout(hideLoading, 500);
           toastError("This is not your video.");
         } else {
           deleteVideoSuccess(video.videoId);
-          setTimeout(hideLoading, 1000);
+          setTimeout(hideLoading, 500);
           toastSuccess("video deleted successfully");
+          //Xóa Video trong firebase
+          fire
+            .storage()
+            .ref(`${video.nameVideo}`)
+            .delete();
+          //Xóa like của mn
+          fire
+            .firestore()
+            .collection("likes")
+            .where("videoId", "==", video.videoId)
+            .get()
+            .then(doc => {
+              doc.forEach(data => {
+                fire.firestore().collection('likes').doc(`${data.id}`).delete();
+              })
+            }).catch(error => {
+              console.error(error);
+            })
           document.delete();
         }
       })
@@ -309,7 +327,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
-            likeId : doc.id,
+            likeId: doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -339,9 +357,10 @@ class VideoBoard extends Component {
         data.forEach(doc => {
           videos.push({
             videoId: doc.id,
+            nameVideo: doc.data().nameVideo,
             email: doc.data().email,
             link: doc.data().link,
-            name: doc.data().name,
+            title: doc.data().title,
             createdAt: doc.data().createdAt,
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
@@ -357,21 +376,20 @@ class VideoBoard extends Component {
   };
   //unlike video
   onClickUnLike = video => {
-    const { videoActionsCreator ,listLike} = this.props;
-    const {
-      fetchVideoSuccess,
-      fetchLikeSuccess
-    } = videoActionsCreator;
+    const { videoActionsCreator, listLike } = this.props;
+    const { fetchVideoSuccess, fetchLikeSuccess } = videoActionsCreator;
     //lọc ra video cần unLike
-    listLike.forEach(like =>{
-      if(like.videoId === video.videoId){
+    listLike.forEach(like => {
+      if (like.videoId === video.videoId) {
         //thêm vào database likes
         fire
           .firestore()
-          .collection("likes").doc(`${like.likeId}`).delete();
+          .collection("likes")
+          .doc(`${like.likeId}`)
+          .delete();
       }
     });
-    
+
     //lấy dữ liệu danh sách đã like
     fire
       .firestore()
@@ -382,7 +400,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
-            likeId : doc.id,
+            likeId: doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -390,7 +408,6 @@ class VideoBoard extends Component {
         fetchLikeSuccess(likes);
       })
       .catch(err => {
-
         console.log(err);
       });
 
@@ -414,12 +431,13 @@ class VideoBoard extends Component {
             videoId: doc.id,
             email: doc.data().email,
             link: doc.data().link,
-            name: doc.data().name,
+            nameVideo: doc.data().nameVideo,
             createdAt: doc.data().createdAt,
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            status: doc.data().status
+            status: doc.data().status,
+            title: doc.data().title
           });
         });
         fetchVideoSuccess(videos);
@@ -432,7 +450,6 @@ class VideoBoard extends Component {
   renderBoard = () => {
     const { listVideo, showSiderBar, listLike } = this.props;
     let xhtml = null;
-
     xhtml = (
       <Grid container spacing={2} style={{ paddingTop: "10px" }}>
         {STATUSES.map(status => {

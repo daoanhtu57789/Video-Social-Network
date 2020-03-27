@@ -57,25 +57,16 @@ class Video extends Component {
         <CardContent>
           <strong>{video.title}</strong>
         </CardContent>
-
-        {/* <iframe
-          title="ads"
-          width={showSiderBar? "360" : "420"}
+        <iframe
+          title={video.title}
+          width={showSiderBar ? "360" : "420"}
           height="200"
           src={video.link}
           frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer;encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          className={classes.iframe}
-        ></iframe> */}
-        <video
-          controls="controls"
-          name="media"
-          width={showSiderBar ? "360" : "420"}
-          height="200"
-        >
-          <source src={video.link} type="video/mp4" />
-        </video>
+        ></iframe>
+        
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
             {video.description}
@@ -123,3 +114,4 @@ class Video extends Component {
 }
 
 export default withStyles(styles)(Video);
+

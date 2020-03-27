@@ -41,7 +41,6 @@ class VideoForm extends Component {
       videoEditing
     } = this.props;
     const {
-      addVideoSuccess,
       addVideoFailed,
       updateVideoSuccess,
       updateVideoFailed,
@@ -99,9 +98,9 @@ class VideoForm extends Component {
               title: dataVideo.title
             });
             //post xong thì đóng loading
-            setTimeout(hideLoading, 1000);
+            setTimeout(hideLoading, 500);
             //thông báo update thành công
-            toastSuccess("Cập nhật thông tin thành công.");
+            toastSuccess("Updated Success.");
           } else {
             hideModal();
             toastError("This is not your video");
@@ -116,7 +115,9 @@ class VideoForm extends Component {
           toastError(err.code);
         });
     } else {
+      //thêm mới video
       const { video } = this.state;
+
       const uploadTask = fire
         .storage()
         .ref(`${video.name}`)
@@ -168,15 +169,8 @@ class VideoForm extends Component {
                   hideModal();
                   //hiện loading chờ
                   showLoading();
-                  //lấy dữ liệu từ doc về
-                  doc.get().then(data => {
-                    //post dữ liệu lên store ;
-                    addVideoSuccess(data.data());
-                  });
-                  //post xong thì đóng loading
-                  setTimeout(hideLoading, 1000);
-                  //thông báo thêm thành công
-                  toastSuccess("Add Video Success.");
+                  //lấy dữ liệu về store
+
                   fire
                     .firestore()
                     .collection("videos")
@@ -199,6 +193,10 @@ class VideoForm extends Component {
                       });
                       fetchVideoSuccess(videos);
                     });
+                  //post xong thì đóng loading
+                  setTimeout(hideLoading, 1000);
+                  //thông báo thêm thành công
+                  toastSuccess("Add Video Success.");
                 })
                 .catch(err => {
                   hideModal();
