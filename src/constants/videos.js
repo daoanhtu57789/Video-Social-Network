@@ -19,6 +19,8 @@ export const SET_VIDEO_EDITING = 'SET_VIDEO_EDITING';
 //lấy danh sách mà user like
 export const FETCH_LIKE_SUCCESS = 'FETCH_LIKED_SUCCESS';
 export const FETCH_LIKE_FAILED = 'FETCH_LIKED_FAILED';
+//tìm kiếm video
 
+export const FILTER_VIDEO = 'FILTER_VIDEO';
 
 

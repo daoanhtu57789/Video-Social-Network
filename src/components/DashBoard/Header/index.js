@@ -56,7 +56,7 @@ class Header extends Component {
   
 
   render() {
-    const { classes, toggleSiderBar } = this.props;
+    const { classes, toggleSiderBar,searchVideo } = this.props;
     const { anchorEl, isMenuOpen } = this.state;
     const renderMenu = (
       <Menu
@@ -104,6 +104,7 @@ class Header extends Component {
                   root: classes.inputRoot,
                   input: classes.inputInput
                 }}
+                onChange={(e) => searchVideo(e)}
                 inputProps={{ "aria-label": "search" }}
               />
             </div>

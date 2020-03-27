@@ -110,3 +110,17 @@ export const fetchLikeFailed = (error) =>{
         }
     }
 }
+
+
+export const filterVideo = (keyword = {},data) => {
+    return {
+        type: videoConstants.FILTER_VIDEO,
+        payload:{
+            keyword,
+            data
+        }
+    }
+};
+
+
+

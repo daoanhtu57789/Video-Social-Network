@@ -7,7 +7,6 @@ import { Button, Grid, Box } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import LoopIcon from "@material-ui/icons/Loop";
 //component
-import SearchBox from "../../components/SearchBox/index";
 import VideoList from "../../components/VideoList/index";
 import VideoForm from "./../VideoForm/index";
 //contans
@@ -58,13 +57,13 @@ class VideoBoard extends Component {
           });
         });
         fetchVideoSuccess(videos);
-        setTimeout(hideLoading, 500);
+        setTimeout(hideLoading, 200);
         toastSuccess("Load Success.");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
-        setTimeout(hideLoading, 500);
+        setTimeout(hideLoading, 200);
         toastError("Load Failed.");
       });
     //lấy dữ danh sách đã like
@@ -89,12 +88,6 @@ class VideoBoard extends Component {
         console.log(err);
       });
   }
-  //Thanh tìm kiếm
-  renderSearchBox = () => {
-    let xhtml = null;
-    xhtml = <SearchBox />;
-    return xhtml;
-  };
 
   //click button up video
   openForm = () => {
@@ -147,13 +140,13 @@ class VideoBoard extends Component {
           });
         });
         fetchVideoSuccess(videos);
-        setTimeout(hideLoading, 500);
+        setTimeout(hideLoading, 200);
         toastSuccess("Load Success .");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
-        setTimeout(hideLoading, 500);
+        setTimeout(hideLoading, 200);
         toastError("Load Failed.");
       });
 
@@ -501,7 +494,6 @@ class VideoBoard extends Component {
           <AddIcon />
           Up Video
         </Button>
-        {this.renderSearchBox()}
         {this.renderBoard()}
       </div>
     );

@@ -2,8 +2,8 @@ import * as videoConstants from "../constants/videos";
 
 const initialState = {
   listVideo: [],
-  videoEditing : null,
-  listLike:[],
+  videoEditing: null,
+  listLike: []
 };
 
 const reducer = (state = initialState, action) => {
@@ -13,11 +13,11 @@ const reducer = (state = initialState, action) => {
     case videoConstants.FETCH_VIDEO_SUCCESS: {
       const { data } = action.payload;
       //Thay đổi thứ tự đển video nào mới đăng sẽ được đưa lên đầu
-      data.sort().reverse();
+      // data.sort().reverse();
       return {
         ...state,
         listVideo: data,
-        videoEditing : null
+        videoEditing: null
       };
     }
 
@@ -28,13 +28,13 @@ const reducer = (state = initialState, action) => {
     }
 
     //khi post data lên và nhận đc data trả về
-  
+
     case videoConstants.ADD_VIDEO_SUCCESS: {
       const { data } = action.payload;
       return {
         ...state,
         listVideo: [data].concat(state.listVideo),
-        videoEditing : null
+        videoEditing: null
       };
     }
 
@@ -44,15 +44,14 @@ const reducer = (state = initialState, action) => {
       };
     }
 
-    
     //khi post data lên và nhận đc data trả về
-   
+
     case videoConstants.DELETE_VIDEO_SUCCESS: {
-      const { videoId} = action.payload;
+      const { videoId } = action.payload;
       return {
         ...state,
         listVideo: state.listVideo.filter(video => video.videoId !== videoId),
-        videoEditing : null
+        videoEditing: null
       };
     }
 
@@ -67,29 +66,31 @@ const reducer = (state = initialState, action) => {
       const { data } = action.payload;
       return {
         ...state,
-        listVideo: [data].concat(state.listVideo.filter(video => video.videoId !== data.videoId)),
-        videoEditing : null
+        listVideo: [data].concat(
+          state.listVideo.filter(video => video.videoId !== data.videoId)
+        ),
+        videoEditing: null
       };
     }
 
     case videoConstants.UPDATE_VIDEO_FAILED: {
       return {
         ...state,
-        videoEditing : null
+        videoEditing: null
       };
     }
 
     //đặt videoEditing
     case videoConstants.SET_VIDEO_EDITING: {
-      const {data} = action.payload
+      const { data } = action.payload;
       return {
         ...state,
-        videoEditing : data
+        videoEditing: data
       };
     }
 
     //get likelist
-    
+
     case videoConstants.FETCH_LIKE_SUCCESS: {
       const { data } = action.payload;
       return {
@@ -101,6 +102,21 @@ const reducer = (state = initialState, action) => {
     case videoConstants.FETCH_LIKE_FAILED: {
       return {
         ...state
+      };
+    }
+    //tìm kiếm video
+    case videoConstants.FILTER_VIDEO: {
+      const { keyword, data } = action.payload;
+      const filteredVideo = data.filter(video =>
+        video.title
+          .trim()
+          .toLowerCase()
+          .includes(keyword.trim().toLowerCase())
+      );
+
+      return {
+        ...state,
+        listVideo: filteredVideo
       };
     }
 

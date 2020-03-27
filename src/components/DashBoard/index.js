@@ -12,7 +12,10 @@ import cn from "classnames";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import * as uiActions from "./../../actions/ui";
+import * as videoActions from "./../../actions/video";
 import { Grid } from "@material-ui/core";
+//firebase
+import fire from "./../../config/Fire";
 
 class DashBoard extends Component {
   toggleSiderBar() {
@@ -21,14 +24,53 @@ class DashBoard extends Component {
     showSiderBar();
   }
 
+  searchVideo = e => {
+    const { value } = e.target;
+    fire
+      .firestore()
+      .collection("videos")
+      .get()
+      .then(data => {
+        let videos = [];
+        data.forEach(doc => {
+          videos.push({
+            videoId: doc.id,
+            email: doc.data().email,
+            link: doc.data().link,
+            nameVideo: doc.data().nameVideo,
+            createdAt: doc.data().createdAt,
+            shareCount: doc.data().shareCount,
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            status: doc.data().status,
+            title: doc.data().title
+          });
+        });
+        const { videoActionsCreator } = this.props;
+        const { filterVideo } = videoActionsCreator;
+        filterVideo(value, videos);
+      })
+      .catch(error => {
+        let videos = [];
+        const { videoActionsCreator } = this.props;
+        const { filterVideo } = videoActionsCreator;
+        filterVideo(value, videos);
+        console.error(error);
+      });
+  };
+
   render() {
     const { classes, children, name, showSiderBar } = this.props;
     return (
       <div>
         {/* Header của trang web */}
         <Grid container className={classes.container}>
-          <Grid item md={12}  className={classes.header}>
-            <Header name={name} toggleSiderBar={() => this.toggleSiderBar()} />
+          <Grid item md={12} className={classes.header}>
+            <Header
+              searchVideo={e => this.searchVideo(e)}
+              name={name}
+              toggleSiderBar={() => this.toggleSiderBar()}
+            />
           </Grid>
           <Grid item md={12} className={classes.content}>
             {/* Content của trang web */}
@@ -55,13 +97,15 @@ class DashBoard extends Component {
 
 const mapStateToProps = state => {
   return {
-    showSiderBar: state.ui.showSiderBar
+    showSiderBar: state.ui.showSiderBar,
+    listVideo: state.video.listVideo
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    uiActionsCreator: bindActionCreators(uiActions, dispatch)
+    uiActionsCreator: bindActionCreators(uiActions, dispatch),
+    videoActionsCreator: bindActionCreators(videoActions, dispatch)
   };
 };
 
