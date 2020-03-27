@@ -48,23 +48,24 @@ class VideoBoard extends Component {
             videoId: doc.id,
             email: doc.data().email,
             link: doc.data().link,
-            name: doc.data().name,
+            nameVideo: doc.data().nameVideo,
             createdAt: doc.data().createdAt,
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            status: doc.data().status
+            status: doc.data().status,
+            title : doc.data().title
           });
         });
         fetchVideoSuccess(videos);
         setTimeout(hideLoading, 1000);
-        toastSuccess("Lấy dữ liệu thành công.");
+        toastSuccess("Load Success.");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
         setTimeout(hideLoading, 1000);
-        toastError("Lấy dữ liệu thất bại :(");
+        toastError("Load Failed.");
       });
     //lấy dữ danh sách đã like
     fire
@@ -108,7 +109,7 @@ class VideoBoard extends Component {
     //truyền video cần xét vào
     setVideoEditing(null);
     showModal();
-    changeModalTitle("Thêm Mới Link Video");
+    changeModalTitle("Thêm Mới Video");
     changeModalContent(<VideoForm />);
   };
 
@@ -136,23 +137,24 @@ class VideoBoard extends Component {
             videoId: doc.id,
             email: doc.data().email,
             link: doc.data().link,
-            name: doc.data().name,
+            nameVideo: doc.data().nameVideo,
             createdAt: doc.data().createdAt,
             shareCount: doc.data().shareCount,
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            status: doc.data().status
+            status: doc.data().status,
+            title : doc.data().title
           });
         });
         fetchVideoSuccess(videos);
         setTimeout(hideLoading, 1000);
-        toastSuccess("Lấy dữ liệu thành công .");
+        toastSuccess("Load Success .");
       })
       .catch(err => {
         console.log(err);
         fetchVideoFailed(err);
         setTimeout(hideLoading, 1000);
-        toastError("Lấy dữ liệu thất bại.");
+        toastError("Load Failed.");
       });
 
     //lấy dữ danh sách đã like

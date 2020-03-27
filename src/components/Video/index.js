@@ -20,9 +20,18 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
 
 class Video extends Component {
-
   render() {
-    const { status, classes,color, video,onClickDelete , onClickEdit,showSiderBar,onClickLike,onClickUnLike } = this.props;
+    const {
+      status,
+      classes,
+      color,
+      video,
+      onClickDelete,
+      onClickEdit,
+      showSiderBar,
+      onClickLike,
+      onClickUnLike
+    } = this.props;
     return (
       <Card className={classes.root}>
         <CardContent>
@@ -35,7 +44,7 @@ class Video extends Component {
                     {video.email[0].toUpperCase()}
                   </Avatar>
                 }
-                title="Đào Anh Tú"
+                title={video.email}
                 style={{ padding: "0" }}
                 subheader={video.createdAt}
               />
@@ -46,29 +55,42 @@ class Video extends Component {
           </Grid>
         </CardContent>
         <CardContent>
-          <strong>
-            {video.name}
-          </strong>
+          <strong>{video.title}</strong>
         </CardContent>
 
-        <iframe
+        {/* <iframe
           title="ads"
           width={showSiderBar? "360" : "420"}
-          height="300"
+          height="200"
           src={video.link}
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className={classes.iframe}
-        ></iframe>
+        ></iframe> */}
+        <video
+          controls="controls"
+          name="media"
+          width={showSiderBar ? "360" : "420"}
+          height="200"
+        >
+          <source src={video.link} type="video/mp4" />
+        </video>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
             {video.description}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites" onClick={color==='secondary' ? () => onClickUnLike(video): () => onClickLike(video)}>
-            <FavoriteIcon color = {color}  /> {video.likeCount}
+          <IconButton
+            aria-label="add to favorites"
+            onClick={
+              color === "secondary"
+                ? () => onClickUnLike(video)
+                : () => onClickLike(video)
+            }
+          >
+            <FavoriteIcon color={color} /> {video.likeCount}
           </IconButton>
           <IconButton aria-label="share">
             <ShareIcon /> {video.shareCount}

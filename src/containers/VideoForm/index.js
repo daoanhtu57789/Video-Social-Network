@@ -19,9 +19,19 @@ import * as uiActions from "./../../actions/ui";
 import fire from "./../../config/Fire";
 //template ui
 import { Grid, Button, Box, MenuItem } from "@material-ui/core";
+
 //thông báo xóa thành công hoặc thất bại
 import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
 class VideoForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      video: null,
+      url: "",
+      progress: 0
+    };
+  }
+
   handleSubmitForm = dataVideo => {
     //phải dùng errow function
     const {
@@ -41,10 +51,10 @@ class VideoForm extends Component {
     const { showLoading, hideLoading } = uiActionsCreator;
     let dateNow = new Date();
     const toStringDate = `${dateNow.getHours()}:${dateNow.getMinutes()}:${dateNow.getSeconds()} ${dateNow.getDate()} thg${dateNow.getMonth()} ${dateNow.getFullYear()}`;
+    //update file xong trước mới update database
 
+    //cập nhật database
     if (videoEditing && videoEditing.videoId) {
-      
-
       //lấy video đang edit
       const videoDocument = fire
         .firestore()
@@ -64,12 +74,12 @@ class VideoForm extends Component {
         .then(data => {
           if (!data) {
             toastError("Video not data");
-          } else if(videoEditing.email === localStorage.getItem('user')){
+          } else if (videoEditing.email === localStorage.getItem("user")) {
             videoDocument.update({
               //update cái gì thì cho cái đó vào
               description: dataVideo.description,
               status: dataVideo.status,
-              name: dataVideo.name
+              title: dataVideo.title
             });
             //ẩn form nhập
             hideModal();
@@ -85,14 +95,14 @@ class VideoForm extends Component {
               likeCount: videoEditing.likeCount,
               shareCount: videoEditing.shareCount,
               createdAt: videoEditing.createdAt,
-              name: dataVideo.name
+              nameVideo: videoEditing.nameVideo,
+              title: dataVideo.title
             });
             //post xong thì đóng loading
             setTimeout(hideLoading, 1000);
             //thông báo update thành công
-            toastSuccess("Cập nhật thông tin thành công.");  
-          }
-          else{
+            toastSuccess("Cập nhật thông tin thành công.");
+          } else {
             hideModal();
             toastError("This is not your video");
           }
@@ -106,68 +116,110 @@ class VideoForm extends Component {
           toastError(err.code);
         });
     } else {
-      const newVideo = {
-        email: localStorage.getItem("user"),
-        link: dataVideo.link,
-        name: dataVideo.name,
-        createdAt: toStringDate,
-        shareCount: 0,
-        likeCount: 0,
-        description: dataVideo.description,
-        status: 0
-      };
+      const { video } = this.state;
+      const uploadTask = fire
+        .storage()
+        .ref(`${video.name}`)
+        .put(video);
 
-      //kết nối database với tên là videos trên firebase
-      fire
-        .firestore()
-        .collection("videos")
-        //thêm mới video
-        .add(newVideo)
-        //thành công trả về 1 doc
-        .then(doc => {
-          //ẩn form nhập
-          hideModal();
-          //hiện loading chờ
-          showLoading();
-          //lấy dữ liệu từ doc về
-          doc.get().then(data => {
-            //post dữ liệu lên;
-            addVideoSuccess(data.data());
-          });
-          //post xong thì đóng loading
-          setTimeout(hideLoading, 1000);
-          //thông báo thêm thành công
-          toastSuccess("Thêm thông tin thành công.");
+      uploadTask.on(
+        "state_changed",
+        snapshot => {
+          //progress function
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          this.setState({ progress });
+        },
+        error => {
+          //error function
+          console.log(error);
+        },
+        () => {
+          //complete function
           fire
-          .firestore()
-          .collection("videos")
-          .get()
-          .then(data => {
-            let videos = [];
-            data.forEach(doc => {
-              videos.push({
-                videoId: doc.id,
-                email: doc.data().email,
-                link: doc.data().link,
-                name: doc.data().name,
-                createdAt: doc.data().createdAt,
-                shareCount: doc.data().shareCount,
-                likeCount: doc.data().likeCount,
-                description: doc.data().description,
-                status: doc.data().status
-              });
+            .storage()
+            .ref()
+            //tìm video có tên là video.name rồi lấy link
+            .child(video.name)
+            .getDownloadURL()
+            .then(link => {
+              const newVideo = {
+                email: localStorage.getItem("user"),
+                link: link,
+                nameVideo: video.name,
+                createdAt: toStringDate,
+                shareCount: 0,
+                likeCount: 0,
+                description: dataVideo.description,
+                status: 0,
+                title: dataVideo.title
+              };
+
+              //kết nối database với tên là videos trên firebase
+              fire
+                .firestore()
+                .collection("videos")
+                //thêm mới video
+                .add(newVideo)
+                //thành công trả về 1 doc
+                .then(doc => {
+                  //ẩn form nhập
+                  hideModal();
+                  //hiện loading chờ
+                  showLoading();
+                  //lấy dữ liệu từ doc về
+                  doc.get().then(data => {
+                    //post dữ liệu lên store ;
+                    addVideoSuccess(data.data());
+                  });
+                  //post xong thì đóng loading
+                  setTimeout(hideLoading, 1000);
+                  //thông báo thêm thành công
+                  toastSuccess("Add Video Success.");
+                  fire
+                    .firestore()
+                    .collection("videos")
+                    .get()
+                    .then(data => {
+                      let videos = [];
+                      data.forEach(doc => {
+                        videos.push({
+                          videoId: doc.id,
+                          email: doc.data().email,
+                          link: doc.data().link,
+                          nameVideo: doc.data().nameVideo,
+                          createdAt: doc.data().createdAt,
+                          shareCount: doc.data().shareCount,
+                          likeCount: doc.data().likeCount,
+                          description: doc.data().description,
+                          status: doc.data().status,
+                          title: doc.data().title
+                        });
+                      });
+                      fetchVideoSuccess(videos);
+                    });
+                })
+                .catch(err => {
+                  hideModal();
+                  showLoading();
+                  console.error(err);
+                  addVideoFailed(err);
+                  setTimeout(hideLoading, 1000);
+                  toastError("Add Video Failed.");
+                });
+              //--------------------------
             });
-            fetchVideoSuccess(videos);
-          })
-        })
-        .catch(err => {
-          hideModal();
-          showLoading();
-          console.error(err);
-          addVideoFailed(err);
-          setTimeout(hideLoading, 1000);
-          toastError("Thêm thông tin thất bại.");
-        });
+        }
+      );
+      ///////////////////////////
+    }
+  }; //ngoài cùng
+
+  handleChange = event => {
+    if (event.target.files[0]) {
+      const video = event.target.files[0];
+      this.setState({ video });
     }
   };
 
@@ -210,12 +262,12 @@ class VideoForm extends Component {
         <Grid container>
           <Grid item md={12}>
             <Field
-              id="name"
-              label="Tên Video"
+              id="title"
+              label="Tiêu Đề"
               multiline
               rowmax="4"
               margin="normal"
-              name="name"
+              name="title"
               className={classes.textField}
               component={renderTextField}
             />
@@ -235,17 +287,25 @@ class VideoForm extends Component {
           {videoEditing && videoEditing.videoId ? (
             this.renderStatusSelection()
           ) : (
+            // <Grid item md={12}>
+            //   <Field
+            //     id="link"
+            //     label="Link Video"
+            //     multiline
+            //     rowmax="4"
+            //     margin="normal"
+            //     name="link"
+            //     className={classes.textField}
+            //     component={renderTextField}
+            //   />
+            // </Grid>
             <Grid item md={12}>
-              <Field
-                id="link"
-                label="Link Video"
-                multiline
-                rowmax="4"
-                margin="normal"
-                name="link"
-                className={classes.textField}
-                component={renderTextField}
+              <progress
+                value={this.state.progress}
+                max="100"
+                style={{ marginBottom: "10px" }}
               />
+              <input type="file" onChange={this.handleChange} />
             </Grid>
           )}
           {/* phần button */}
@@ -283,7 +343,7 @@ const mapStateToProps = state => {
       description: state.video.videoEditing
         ? state.video.videoEditing.description
         : null,
-      name: state.video.videoEditing ? state.video.videoEditing.name : null,
+      title: state.video.videoEditing ? state.video.videoEditing.title : null,
       status: state.video.videoEditing ? state.video.videoEditing.status : null
     }
   };

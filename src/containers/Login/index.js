@@ -19,7 +19,7 @@ import * as uiActions from "./../../actions/ui";
 //firebase
 import fire from "./../../config/Fire";
 //thông báo khi lỗi
-import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
+import { toastError } from "./../../helpers/toastHelpers";
 class Login extends Component {
   constructor(props) {
     super(props);
