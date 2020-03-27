@@ -110,20 +110,3 @@ export const fetchLikeFailed = (error) =>{
         }
     }
 }
-
-//like
-export const likeVideo = (data)=>{
-    return {
-        type : videoConstants.LIKE,
-        payload:{
-            data
-        }
-    }
-}
-
-export const unLikeVideo= (data) =>{
-    return {
-        type : videoConstants.UN_LIKE,
-        payload:{data}
-    }
-}

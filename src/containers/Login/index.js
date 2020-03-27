@@ -63,7 +63,6 @@ class Login extends Component {
       .then(u => {
         hideLoadingLogin();
         if (history) {
-          toastSuccess("Đăng nhập thành công.");
           history.push("/admin");
         }
       })

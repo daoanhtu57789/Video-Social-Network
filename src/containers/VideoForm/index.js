@@ -66,14 +66,9 @@ class VideoForm extends Component {
             toastError("Video not data");
           } else if(videoEditing.email === localStorage.getItem('user')){
             videoDocument.update({
-              videoId: videoEditing.videoId,
-              email: videoEditing.email,
+              //update cái gì thì cho cái đó vào
               description: dataVideo.description,
-              link: videoEditing.link,
               status: dataVideo.status,
-              likeCount: videoEditing.likeCount,
-              shareCount: videoEditing.shareCount,
-              createdAt: videoEditing.createdAt,
               name: dataVideo.name
             });
             //ẩn form nhập

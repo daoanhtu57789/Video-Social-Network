@@ -104,23 +104,6 @@ const reducer = (state = initialState, action) => {
       };
     }
 
-    //like video
-    case videoConstants.LIKE: {
-      const {data} = action.payload
-      console.log(data);
-      return {
-        ...state
-      };
-    }
-
-    case videoConstants.UN_LIKE: {
-      const {data} = action.payload
-      console.log(data);
-      return {
-        ...state
-      };
-    }
-
     default: {
       return {
         ...state

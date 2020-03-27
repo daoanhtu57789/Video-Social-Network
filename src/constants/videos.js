@@ -19,10 +19,6 @@ export const SET_VIDEO_EDITING = 'SET_VIDEO_EDITING';
 //lấy danh sách mà user like
 export const FETCH_LIKE_SUCCESS = 'FETCH_LIKED_SUCCESS';
 export const FETCH_LIKE_FAILED = 'FETCH_LIKED_FAILED';
-//click Like
-export const LIKE = 'LIKE';
-
-export const UN_LIKE = 'UN_LIKE';
 
 
 

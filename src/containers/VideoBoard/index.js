@@ -58,7 +58,7 @@ class VideoBoard extends Component {
         });
         fetchVideoSuccess(videos);
         setTimeout(hideLoading, 1000);
-        toastSuccess("Lấy dữ liệu thành công =) .");
+        toastSuccess("Lấy dữ liệu thành công.");
       })
       .catch(err => {
         console.log(err);
@@ -76,6 +76,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
+            likeId:doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -164,6 +165,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
+            likeId : doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -278,32 +280,24 @@ class VideoBoard extends Component {
   };
   //Like Video
 
-  //Edit Video
   onClickLike = video => {
     const { videoActionsCreator } = this.props;
     const {
-      likeVideo,
-      unLikeVideo,
+      fetchVideoSuccess,
       fetchLikeSuccess,
       fetchLikeFailed
     } = videoActionsCreator;
-    // likeVideo({ emali: localStorage.getItem("user"), videoId: video.videoId });
-    // unLikeVideo({
-    //   emali: localStorage.getItem("user"),
-    //   videoId: video.videoId
-    // });
+
     //thêm vào database likes
     fire
       .firestore()
       .collection("likes")
       .add({ email: localStorage.getItem("user"), videoId: video.videoId })
-      .then(doc => {
-        console.log(doc.id);
-      })
+      .then(doc => {})
       .catch(error => {
         console.error(error);
       });
-    //lấy dữ danh sách đã like
+    //lấy dữ liệu danh sách đã like
     fire
       .firestore()
       .collection("likes")
@@ -313,6 +307,7 @@ class VideoBoard extends Component {
         let likes = [];
         likeData.forEach(doc => {
           likes.push({
+            likeId : doc.id,
             email: doc.data().email,
             videoId: doc.data().videoId
           });
@@ -321,6 +316,113 @@ class VideoBoard extends Component {
       })
       .catch(err => {
         fetchLikeFailed(err);
+        console.log(err);
+      });
+
+    fire
+      .firestore()
+      .collection("videos")
+      .doc(`/${video.videoId}`)
+      .update({
+        //update cái gì thì cho cái đó vào
+        likeCount: video.likeCount + 1
+      });
+
+    fire
+      .firestore()
+      .collection("videos")
+      .get()
+      .then(data => {
+        let videos = [];
+        data.forEach(doc => {
+          videos.push({
+            videoId: doc.id,
+            email: doc.data().email,
+            link: doc.data().link,
+            name: doc.data().name,
+            createdAt: doc.data().createdAt,
+            shareCount: doc.data().shareCount,
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            status: doc.data().status
+          });
+        });
+        fetchVideoSuccess(videos);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  //unlike video
+  onClickUnLike = video => {
+    const { videoActionsCreator ,listLike} = this.props;
+    const {
+      fetchVideoSuccess,
+      fetchLikeSuccess
+    } = videoActionsCreator;
+    //lọc ra video cần unLike
+    listLike.forEach(like =>{
+      if(like.videoId === video.videoId){
+        //thêm vào database likes
+        fire
+          .firestore()
+          .collection("likes").doc(`${like.likeId}`).delete();
+      }
+    });
+    
+    //lấy dữ liệu danh sách đã like
+    fire
+      .firestore()
+      .collection("likes")
+      .where("email", "==", localStorage.getItem("user"))
+      .get()
+      .then(likeData => {
+        let likes = [];
+        likeData.forEach(doc => {
+          likes.push({
+            likeId : doc.id,
+            email: doc.data().email,
+            videoId: doc.data().videoId
+          });
+        });
+        fetchLikeSuccess(likes);
+      })
+      .catch(err => {
+
+        console.log(err);
+      });
+
+    fire
+      .firestore()
+      .collection("videos")
+      .doc(`/${video.videoId}`)
+      .update({
+        //update cái gì thì cho cái đó vào
+        likeCount: video.likeCount - 1
+      });
+
+    fire
+      .firestore()
+      .collection("videos")
+      .get()
+      .then(data => {
+        let videos = [];
+        data.forEach(doc => {
+          videos.push({
+            videoId: doc.id,
+            email: doc.data().email,
+            link: doc.data().link,
+            name: doc.data().name,
+            createdAt: doc.data().createdAt,
+            shareCount: doc.data().shareCount,
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            status: doc.data().status
+          });
+        });
+        fetchVideoSuccess(videos);
+      })
+      .catch(err => {
         console.log(err);
       });
   };
@@ -343,6 +445,7 @@ class VideoBoard extends Component {
               onClickDelete={this.onClickDelete}
               onClickEdit={this.onClickEdit}
               onClickLike={this.onClickLike}
+              onClickUnLike={this.onClickUnLike}
               showSiderBar={showSiderBar}
               listLike={listLike}
             />

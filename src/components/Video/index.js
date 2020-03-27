@@ -22,7 +22,7 @@ import ShareIcon from "@material-ui/icons/Share";
 class Video extends Component {
 
   render() {
-    const { status, classes,color, video,onClickDelete , onClickEdit,showSiderBar,onClickLike } = this.props;
+    const { status, classes,color, video,onClickDelete , onClickEdit,showSiderBar,onClickLike,onClickUnLike } = this.props;
     return (
       <Card className={classes.root}>
         <CardContent>
@@ -67,7 +67,7 @@ class Video extends Component {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton aria-label="add to favorites" onClick={() => onClickLike(video)}>
+          <IconButton aria-label="add to favorites" onClick={color==='secondary' ? () => onClickUnLike(video): () => onClickLike(video)}>
             <FavoriteIcon color = {color}  /> {video.likeCount}
           </IconButton>
           <IconButton aria-label="share">
