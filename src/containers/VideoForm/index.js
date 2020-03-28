@@ -6,6 +6,7 @@ import styles from "./styles";
 import { Field, reduxForm } from "redux-form";
 import renderTextField from "./../../components/FormHelpers/TextField/index";
 import renderSelectField from "./../../components/FormHelpers/SelectField/index";
+
 //redux
 import { compose } from "redux";
 //kêt nối với store
@@ -32,6 +33,13 @@ class VideoForm extends Component {
     };
   }
 
+  handleChange = event => {
+    if (event.target.files[0]) {
+      const video = event.target.files[0];
+      this.setState({ video });
+    }
+  };
+
   handleSubmitForm = dataVideo => {
     //phải dùng errow function
     const {
@@ -43,7 +51,6 @@ class VideoForm extends Component {
     const {
       addVideoFailed,
       updateVideoSuccess,
-      updateVideoFailed,
       fetchVideoSuccess
     } = videoActionsCreator;
     const { hideModal } = modalActionsCreator;
@@ -98,7 +105,7 @@ class VideoForm extends Component {
               title: dataVideo.title
             });
             //post xong thì đóng loading
-            setTimeout(hideLoading, 500);
+            setTimeout(hideLoading, 300);
             //thông báo update thành công
             toastSuccess("Updated Success.");
           } else {
@@ -109,12 +116,11 @@ class VideoForm extends Component {
         .catch(err => {
           hideModal();
           showLoading();
-          updateVideoFailed(err);
-          setTimeout(hideLoading, 1000);
+          setTimeout(hideLoading, 300);
           console.error(err);
           toastError(err.code);
         });
-    } else {
+    } else if(!dataVideo.link) {
       //thêm mới video
       const { video } = this.state;
 
@@ -194,7 +200,7 @@ class VideoForm extends Component {
                       fetchVideoSuccess(videos);
                     });
                   //post xong thì đóng loading
-                  setTimeout(hideLoading, 1000);
+                  setTimeout(hideLoading, 300);
                   //thông báo thêm thành công
                   toastSuccess("Add Video Success.");
                 })
@@ -203,7 +209,7 @@ class VideoForm extends Component {
                   showLoading();
                   console.error(err);
                   addVideoFailed(err);
-                  setTimeout(hideLoading, 1000);
+                  setTimeout(hideLoading, 300);
                   toastError("Add Video Failed.");
                 });
               //--------------------------
@@ -211,15 +217,66 @@ class VideoForm extends Component {
         }
       );
       ///////////////////////////
+    }else{
+      let splitted = dataVideo.link.split("/watch?v=", 2);
+      const newVideo = {
+        email: localStorage.getItem('user'),
+        link: splitted.length>0 ? `${splitted[0]}/embed/${splitted[1]}` : dataVideo.link,
+        title: dataVideo.title,
+        createdAt: toStringDate,
+        shareCount: 0,
+        likeCount: 0,
+        description: dataVideo.description,
+        status : 0,
+        nameVideo:""
+      };
+      
+      //kết nối database với tên là videos trên firebase 
+      fire.firestore().collection('videos')
+        //thêm mới video
+        .add(newVideo)
+        //thành công trả về 1 doc
+        .then((doc) => {
+          //ẩn form nhập
+          hideModal();
+          //hiện loading chờ
+          showLoading();
+          fire
+          .firestore()
+          .collection("videos")
+          .get()
+          .then(data => {
+            let videos = [];
+            data.forEach(doc => {
+              videos.push({
+                videoId: doc.id,
+                email: doc.data().email,
+                link: doc.data().link,
+                nameVideo: doc.data().nameVideo,
+                createdAt: doc.data().createdAt,
+                shareCount: doc.data().shareCount,
+                likeCount: doc.data().likeCount,
+                description: doc.data().description,
+                status: doc.data().status,
+                title: doc.data().title
+              });
+            });
+            fetchVideoSuccess(videos);
+          });
+          //post xong thì đóng loading
+          setTimeout(hideLoading, 300);
+          //thông báo thêm thành công
+          toastSuccess("Add Video Success.");
+        })
+        .catch((err) => {
+          hideModal();
+          showLoading();
+          console.error(err);
+          setTimeout(hideLoading, 300);
+          toastError("Add Video Failed.");
+        });
     }
   }; //ngoài cùng
-
-  handleChange = event => {
-    if (event.target.files[0]) {
-      const video = event.target.files[0];
-      this.setState({ video });
-    }
-  };
 
   renderStatusSelection() {
     let xhtml = null;
@@ -248,7 +305,8 @@ class VideoForm extends Component {
       classes,
       modalActionsCreator,
       handleSubmit,
-      videoEditing
+      videoEditing,
+      dataOpen
     } = this.props;
     const { hideModal } = modalActionsCreator;
     return (
@@ -284,19 +342,7 @@ class VideoForm extends Component {
 
           {videoEditing && videoEditing.videoId ? (
             this.renderStatusSelection()
-          ) : (
-            // <Grid item md={12}>
-            //   <Field
-            //     id="link"
-            //     label="Link Video"
-            //     multiline
-            //     rowmax="4"
-            //     margin="normal"
-            //     name="link"
-            //     className={classes.textField}
-            //     component={renderTextField}
-            //   />
-            // </Grid>
+          ) : dataOpen.file ? (
             <Grid item md={12}>
               <progress
                 value={this.state.progress}
@@ -304,6 +350,19 @@ class VideoForm extends Component {
                 style={{ marginBottom: "10px" }}
               />
               <input type="file" onChange={this.handleChange} />
+            </Grid>
+          ) : (
+            <Grid item md={12}>
+              <Field
+                id="link"
+                label="Link Video"
+                multiline
+                rowmax="4"
+                margin="normal"
+                name="link"
+                className={classes.textField}
+                component={renderTextField}
+              />
             </Grid>
           )}
           {/* phần button */}

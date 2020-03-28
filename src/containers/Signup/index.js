@@ -6,14 +6,17 @@ import styles from "./styles";
 import AppIcon from "../../assets/images/corgi.jpg";
 import { Link } from "react-router-dom";
 
-import { withRouter } from "react-router-dom";
 //thông báo khi lỗi
-import {toastError,toastSuccess} from './../../helpers/toastHelpers';
-
+import { toastError, toastSuccess } from "./../../helpers/toastHelpers";
+//redux-form
+import { Field, reduxForm } from "redux-form";
+import renderTextField from "./../../components/FormHelpers/TextField/index";
+import validate from './formValidate';
+//redux
+import { compose } from "redux";
 // MUI Stuff
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 //kết nối store
 import { connect } from "react-redux";
@@ -21,52 +24,41 @@ import { bindActionCreators } from "redux";
 import * as uiActions from "./../../actions/ui";
 import { CircularProgress } from "@material-ui/core";
 //firebase
-import fire from './../../config/Fire';
+import fire from "./../../config/Fire";
 
 class Signup extends Component {
-  constructor() {
-    super();
-    this.state = {
-      email: "",
-      password: "",
-      confirmPassword: "",
-      errors: {}
-    };
-  }
 
-  handleChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
-
-  handleSubmit = event => {
-    event.preventDefault();
+  handleSubmit = data => {
     const { uiActionCreators } = this.props;
-    const { showLoadingSignup,hideLoadingSignup} = uiActionCreators;
+    const { showLoadingSignup, hideLoadingSignup } = uiActionCreators;
     showLoadingSignup();
-    if(this.state.password === this.state.confirmPassword ){
+    if (data.password === data.confirmPassword) {
       fire
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(()=>{
-        toastSuccess("Đăng kí thành công");
-        hideLoadingSignup();
-      })
-      .catch((error) =>{
-          console.log(error);
-          toastError("Tài khoản đã tồn tại.");
+        .auth()
+        .createUserWithEmailAndPassword(data.email, data.password)
+        .then(() => {
+          toastSuccess("Singup Success");
           hideLoadingSignup();
-      });
-    }else{
-      toastError("Mật khẩu không giống nhau hoặc ít hơn 6 kí tự");
+        })
+        .catch(error => {
+          toastError("Singup Error");
+          hideLoadingSignup();
+        });
+    } else {
+      toastError("Singup Error");
       hideLoadingSignup();
     }
   };
+  
 
   render() {
-    const { classes,showLoadingSignup } = this.props;
-    const { errors } = this.state;
+    const {
+      classes,
+      showLoadingSignup,
+      handleSubmit,
+      invalid,
+      submitting
+    } = this.props;
 
     return (
       <Grid container className={classes.form}>
@@ -76,55 +68,46 @@ class Signup extends Component {
           <Typography variant="h2" className={classes.pageTitle}>
             SignUp
           </Typography>
-          <form noValidate onSubmit={this.handleSubmit}>
-            <TextField
+          <form onSubmit={handleSubmit(this.handleSubmit)}>
+            
+            <Field
               id="email"
               name="email"
               type="email"
               label="Email"
               className={classes.textField}
-              helperText={errors.email}
-              error={errors.email ? true : false}
-              value={this.state.email}
-              onChange={this.handleChange}
+              
               fullWidth
+              component={renderTextField}
             />
-            <TextField
+            <Field
               id="password"
               name="password"
               type="password"
               label="Password"
               className={classes.textField}
-              helperText={errors.password}
-              error={errors.password ? true : false}
-              value={this.state.password}
-              onChange={this.handleChange}
+              
               fullWidth
+              component={renderTextField}
             />
-            <TextField
+            <Field
               id="confirmPassword"
               name="confirmPassword"
               type="password"
               label="Confirm Password"
               className={classes.textField}
-              helperText={errors.confirmPassword}
-              error={errors.confirmPassword ? true : false}
-              value={this.state.confirmPassword}
-              onChange={this.handleChange}
+              
               fullWidth
+              component={renderTextField}
             />
-            
-            {errors.general && (
-              <Typography variant="body2" className={classes.customError}>
-                {errors.general}
-              </Typography>
-            )}
+      
             <Button
-              type="submit"
+              disabled={invalid || submitting}
               variant="contained"
               color="primary"
+              type="submit"
               className={classes.button}
-              disabled={showLoadingSignup}
+              
             >
               SignUp
               {showLoadingSignup && (
@@ -155,7 +138,15 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(withRouter(Signup)));
+//kết nối với redux-form
+const FORM_NAME = "TASK_MANAGEMENT";
+const withReduxForm = reduxForm({
+  form: FORM_NAME,
+  validate
+});
+
+export default compose(
+  withStyles(styles),
+  connect(mapStateToProps, mapDispatchToProps),
+  withReduxForm
+)(Signup);

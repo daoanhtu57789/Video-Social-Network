@@ -6,6 +6,7 @@ import styles from "./styles";
 import { Button, Grid, Box } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import LoopIcon from "@material-ui/icons/Loop";
+import InsertDriveFileIcon from "@material-ui/icons/InsertDriveFile";
 //component
 import VideoList from "../../components/VideoList/index";
 import VideoForm from "./../VideoForm/index";
@@ -90,9 +91,8 @@ class VideoBoard extends Component {
   }
 
   //click button up video
-  openForm = () => {
+  openFormFile = dataOpen => {
     const { modalActionsCreator, videoActionsCreator } = this.props;
-
     const {
       showModal,
       changeModalContent,
@@ -102,8 +102,23 @@ class VideoBoard extends Component {
     //truyền video cần xét vào
     setVideoEditing(null);
     showModal();
-    changeModalTitle("Thêm Mới Video");
-    changeModalContent(<VideoForm />);
+    changeModalTitle("Thêm Mới File Video");
+    changeModalContent(<VideoForm dataOpen={dataOpen} />);
+  };
+
+  openFormLink = dataOpen => {
+    const { modalActionsCreator, videoActionsCreator } = this.props;
+    const {
+      showModal,
+      changeModalContent,
+      changeModalTitle
+    } = modalActionsCreator;
+    const { setVideoEditing } = videoActionsCreator;
+    //truyền video cần xét vào
+    setVideoEditing(null);
+    showModal();
+    changeModalTitle("Thêm Mới Link Video");
+    changeModalContent(<VideoForm dataOpen={dataOpen} />);
   };
 
   //click button load video
@@ -250,10 +265,12 @@ class VideoBoard extends Component {
           setTimeout(hideLoading, 500);
           toastSuccess("video deleted successfully");
           //Xóa Video trong firebase
-          fire
+          if(video.nameVideo){
+            fire
             .storage()
             .ref(`${video.nameVideo}`)
             .delete();
+          }
           //Xóa like của mn
           fire
             .firestore()
@@ -262,11 +279,16 @@ class VideoBoard extends Component {
             .get()
             .then(doc => {
               doc.forEach(data => {
-                fire.firestore().collection('likes').doc(`${data.id}`).delete();
-              })
-            }).catch(error => {
-              console.error(error);
+                fire
+                  .firestore()
+                  .collection("likes")
+                  .doc(`${data.id}`)
+                  .delete();
+              });
             })
+            .catch(error => {
+              console.error(error);
+            });
           document.delete();
         }
       })
@@ -486,16 +508,28 @@ class VideoBoard extends Component {
         </Button>
 
         <Button
+          style={{ marginRight: "10px" }}
           variant="contained"
           color="primary"
           className={classes.button}
-          onClick={this.openForm}
+          onClick={() => this.openFormFile({ file: true, link: false })}
+        >
+          <InsertDriveFileIcon />
+          Up File Video
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={() => this.openFormLink({ file: false, link: true })}
         >
           <AddIcon />
-          Up Video
+          Up Link Video
         </Button>
         {this.renderBoard()}
       </div>
+
     );
   }
 }
